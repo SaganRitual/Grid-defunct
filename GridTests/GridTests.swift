@@ -6,16 +6,37 @@ import XCTest
 class GridTests: XCTestCase {
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        Grid.makeGrid(KGSize(width: 100, height: 100))
     }
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testForSmoke() throws {
+        let area = Grid.gridDimensionsCells.area()
+        let expectedArea = 99 * 99  // Because grid likes odd
+        XCTAssert(
+            area == expectedArea,
+            "100 x 100 grid should contain \(expectedArea) cells, got \(area)"
+        )
+    }
+
+    func testCell() throws {
+        let c1 = Grid.cellAt(0)
+        XCTAssert(
+            c1.properties.gridPosition == KGPoint(x: -49, y: 49),
+            "Cell 0 should be in the upper-left cornder of the grid (x: -49, y: 49)"
+        )
+
+        let c2 = Grid.cellAt(KGPoint.zero)
+        let expectedIx = (49 * 99) + 49
+        XCTAssert(
+            c2.properties.gridAbsoluteIndex == expectedIx,
+            "Cell at (0, 0) should be in the center"
+            + " of the grid abs index \(expectedIx)"
+            + ", got \(c2.properties.gridAbsoluteIndex)"
+        )
     }
 
     func testPerformanceExample() throws {
