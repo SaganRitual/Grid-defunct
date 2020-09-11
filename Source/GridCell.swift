@@ -1,11 +1,20 @@
 import Foundation
 
+protocol GridCellContents: class {
+
+}
+
 class GridCell: CustomDebugStringConvertible {
+    weak var contents: GridCellContents?
     let properties: GridCellProperties
 
     var debugDescription: String { "Cell at \(properties.gridPosition)" }
 
     init(_ absoluteIndex: Int) { properties = .init(absoluteIndex) }
+
+    static func == (lhs: GridCell, rhs: GridCell) -> Bool {
+        lhs.properties.gridPosition == rhs.properties.gridPosition
+    }
 }
 
 struct GridCellProperties: CustomDebugStringConvertible {

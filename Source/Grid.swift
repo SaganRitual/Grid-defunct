@@ -53,16 +53,21 @@ extension Grid {
 
     static func cellAt(
         _ localIx: Int, from center: GridCell
-    ) -> (GridCell, KGPoint) {
+    ) -> Grid.AsteroidPoint {
         theGrid.indexer.localIndexToRealGrid(localIx, from: center)
     }
 }
 
 extension Grid {
+    struct AsteroidPoint {
+        let realCell: GridCell
+        let relativeVirtualPosition: KGPoint
+    }
+    
     static func first(
         fromCenterAt absoluteGridIndex: Int, cCells: Int,
-        where predicate: @escaping (GridCell, KGPoint) -> Bool
-    ) -> (GridCell, KGPoint)? {
+        where predicate: @escaping (AsteroidPoint) -> Bool
+    ) -> AsteroidPoint? {
         theGrid.indexer.first(
             fromCenterAt: absoluteGridIndex, cCells: cCells, where: predicate
         )
@@ -70,8 +75,8 @@ extension Grid {
 
     static func first(
         fromCenterAt centerCell: GridCell, cCells: Int,
-        where predicate: @escaping (GridCell, KGPoint) -> Bool
-    ) -> (GridCell, KGPoint)? {
+        where predicate: @escaping (AsteroidPoint) -> Bool
+    ) -> AsteroidPoint? {
         theGrid.indexer.first(
             fromCenterAt: centerCell, cCells: cCells, where: predicate
         )
@@ -103,4 +108,18 @@ extension Grid {
     }
 
     static func randomCell() -> GridCell { cellAt(randomCellIndex()) }
+}
+
+extension Grid {
+    static func localIndexToRealGrid(
+        _ localIx: Int, from center: GridCell
+    ) -> Grid.AsteroidPoint {
+        return theGrid.indexer.localIndexToRealGrid(localIx, from: center)
+    }
+
+    static func localIndexToVirtualGrid(
+        _ localIx: Int, from center: GridCell
+    ) -> KGPoint {
+        return theGrid.indexer.localIndexToVirtualGrid(localIx, from: center)
+    }
 }

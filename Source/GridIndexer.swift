@@ -22,12 +22,16 @@ struct GridIndexer {
         return cCellsPerSide * cCellsPerSide
     }
 
-    func localIndexToVirtualGrid(_ localIx: Int, from centerGridCell: GridCell) -> KGPoint {
-        indexedGridPoints[localIx] + centerGridCell.properties.gridPosition
+    func localIndexToVirtualGrid(
+        _ localIx: Int, from center: GridCell
+    ) -> KGPoint {
+        indexedGridPoints[localIx] + center.properties.gridPosition
     }
 
-    func localIndexToRealGrid(_ localIx: Int, from centerGridCell: GridCell) -> (GridCell, KGPoint) {
-        let virtualGridPosition = localIndexToVirtualGrid(localIx, from: centerGridCell)
+    func localIndexToRealGrid(
+        _ localIx: Int, from center: GridCell
+    ) -> Grid.AsteroidPoint {
+        let virtualGridPosition = localIndexToVirtualGrid(localIx, from: center)
         return asteroidize(virtualGridPosition)
     }
 
@@ -62,27 +66,28 @@ struct GridIndexer {
 extension GridIndexer {
     func first(
         fromCenterAt absoluteGridIndex: Int, cCells: Int,
-        where predicate: @escaping (GridCell, KGPoint) -> Bool
-    ) -> (GridCell, KGPoint)? {
+        where predicate: @escaping (Grid.AsteroidPoint) -> Bool
+    ) -> Grid.AsteroidPoint? {
         let centerCell = Grid.cellAt(absoluteGridIndex)
         return first(fromCenterAt: centerCell, cCells: cCells, where: predicate)
     }
 
     func first(
         fromCenterAt centerCell: GridCell, cCells: Int,
-        where predicate: @escaping (GridCell, KGPoint) -> Bool
-    ) -> (GridCell, KGPoint)? {
-        var gridCell: GridCell?
-        var virtualGridPosition: KGPoint?
+        where predicate: @escaping (Grid.AsteroidPoint) -> Bool
+    ) -> Grid.AsteroidPoint? {
+        var asteroid = Grid.AsteroidPoint(
+            realCell: Grid.cellAt(0),
+            relativeVirtualPosition: KGPoint.zero
+        )
 
         let ix = (0..<cCells).first { localIndex in
-            (gridCell, virtualGridPosition) =
-                localIndexToRealGrid(localIndex, from: centerCell)
+            asteroid = localIndexToRealGrid(localIndex, from: centerCell)
 
-            return predicate(gridCell!, virtualGridPosition!)
+            return predicate(asteroid)
         }
 
-        return ix == nil ? nil : (gridCell!, virtualGridPosition!)
+        return ix == nil ? nil : asteroid
     }
 }
 
@@ -90,7 +95,7 @@ private extension GridIndexer {
     // In other words, check whether the specified point is out of bounds of
     // the grid, and if so, return the point on the other side of the grid,
     // a wrap-around like the old Atari game called Asteroids
-    func asteroidize(_ virtualGridPosition: KGPoint) -> (GridCell, KGPoint) {
+    func asteroidize(_ virtualGridPosition: KGPoint) -> Grid.AsteroidPoint {
         let ax = abs(virtualGridPosition.x), sx = (virtualGridPosition.x < 0) ? -1 : 1
         let ay = abs(virtualGridPosition.y), sy = (virtualGridPosition.y < 0) ? -1 : 1
 
@@ -104,10 +109,18 @@ private extension GridIndexer {
         if let ny = warp(ay, Grid.gridDimensionsCells.height, newY, sy) { newY = ny }
 
         let realGridPosition = KGPoint(x: newX, y: newY)
+        let realCell = Grid.cellAt(realGridPosition)
 
-        return (realGridPosition == virtualGridPosition) ?
-            (Grid.cellAt(realGridPosition), realGridPosition) :
-            (Grid.cellAt(realGridPosition), virtualGridPosition)
+        return realGridPosition == virtualGridPosition ?
+            Grid.AsteroidPoint(
+                realCell: realCell,
+                relativeVirtualPosition: realGridPosition
+            ) :
+
+            Grid.AsteroidPoint(
+                realCell: realCell,
+                relativeVirtualPosition: virtualGridPosition
+            )
     }
 }
 
