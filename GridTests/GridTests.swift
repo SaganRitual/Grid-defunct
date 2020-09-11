@@ -26,16 +26,26 @@ class GridTests: XCTestCase {
         let c1 = Grid.cellAt(0)
         XCTAssert(
             c1.properties.gridPosition == KGPoint(x: -49, y: 49),
-            "Cell 0 should be in the upper-left cornder of the grid (x: -49, y: 49)"
+            "Cell 0 should be in the upper-left corner of the grid (x: -49, y: 49)"
         )
 
         let c2 = Grid.cellAt(KGPoint.zero)
-        let expectedIx = (49 * 99) + 49
+        let expectedIx = (49 * 99) + 49 // halfway down and halfway across
         XCTAssert(
             c2.properties.gridAbsoluteIndex == expectedIx,
             "Cell at (0, 0) should be in the center"
             + " of the grid abs index \(expectedIx)"
             + ", got \(c2.properties.gridAbsoluteIndex)"
+        )
+
+        let c3 = Grid.cellAt(99 * 99 - 1)
+        let expectedPosition = KGPoint(x: 49, y: -49)
+        XCTAssert(
+            c3.properties.gridPosition == expectedPosition,
+            "Cell at index \(99 * 99 - 1)"
+            + " should be in the lower right corner"
+            + " of the grid \(expectedPosition)"
+            + ", got \(c3.properties.gridPosition)"
         )
     }
 

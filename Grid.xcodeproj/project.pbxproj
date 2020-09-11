@@ -16,10 +16,8 @@
 		D443DB2A250AB70C00585F7C /* GridUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB29250AB70C00585F7C /* GridUITests.swift */; };
 		D443DB39250AB7C900585F7C /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB38250AB7C900585F7C /* Grid.swift */; };
 		D443DB3A250AB85800585F7C /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB38250AB7C900585F7C /* Grid.swift */; };
-		D443DB3D250AB9FA00585F7C /* GridCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB3B250AB9FA00585F7C /* GridCore.swift */; };
 		D443DB3E250AB9FA00585F7C /* GridIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB3C250AB9FA00585F7C /* GridIndexer.swift */; };
 		D443DB3F250ABA0800585F7C /* GridIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB3C250AB9FA00585F7C /* GridIndexer.swift */; };
-		D443DB40250ABA0800585F7C /* GridCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB3B250AB9FA00585F7C /* GridCore.swift */; };
 		D443DB42250ABA4A00585F7C /* GridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB41250ABA4A00585F7C /* GridCell.swift */; };
 		D443DB43250ABA5500585F7C /* GridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB41250ABA4A00585F7C /* GridCell.swift */; };
 		D443DB4E250ACF8F00585F7C /* KGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB4C250ACF8F00585F7C /* KGPoint.swift */; };
@@ -63,7 +61,6 @@
 		D443DB29250AB70C00585F7C /* GridUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUITests.swift; sourceTree = "<group>"; };
 		D443DB2B250AB70C00585F7C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D443DB38250AB7C900585F7C /* Grid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
-		D443DB3B250AB9FA00585F7C /* GridCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridCore.swift; sourceTree = "<group>"; };
 		D443DB3C250AB9FA00585F7C /* GridIndexer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridIndexer.swift; sourceTree = "<group>"; };
 		D443DB41250ABA4A00585F7C /* GridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridCell.swift; sourceTree = "<group>"; };
 		D443DB4C250ACF8F00585F7C /* KGPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KGPoint.swift; sourceTree = "<group>"; };
@@ -163,7 +160,6 @@
 				D443DB45250ABAE200585F7C /* Tools */,
 				D443DB38250AB7C900585F7C /* Grid.swift */,
 				D443DB41250ABA4A00585F7C /* GridCell.swift */,
-				D443DB3B250AB9FA00585F7C /* GridCore.swift */,
 				D443DB3C250AB9FA00585F7C /* GridIndexer.swift */,
 			);
 			path = Source;
@@ -310,7 +306,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D443DB3D250AB9FA00585F7C /* GridCore.swift in Sources */,
 				D443DB53250ACFB900585F7C /* Utilities.swift in Sources */,
 				D443DB0B250AB70B00585F7C /* ContentView.swift in Sources */,
 				D443DB4E250ACF8F00585F7C /* KGPoint.swift in Sources */,
@@ -326,7 +321,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D443DB40250ABA0800585F7C /* GridCore.swift in Sources */,
 				D443DB3F250ABA0800585F7C /* GridIndexer.swift in Sources */,
 				D443DB1F250AB70C00585F7C /* GridTests.swift in Sources */,
 				D443DB54250ACFB900585F7C /* Utilities.swift in Sources */,
