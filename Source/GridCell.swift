@@ -10,7 +10,13 @@ class GridCell: CustomDebugStringConvertible {
 
     var debugDescription: String { "Cell at \(properties.gridPosition)" }
 
-    init(_ absoluteIndex: Int) { properties = .init(absoluteIndex) }
+    init(_ absoluteIndex: Int, _ gridDimensionsCells: KGSize) {
+        let position = GridCellLocator.gridPosition(
+            of: absoluteIndex, gridDimensionsCells: gridDimensionsCells
+        )
+
+        self.properties = GridCellProperties(absoluteIndex, gridPosition: position)
+    }
 
     static func == (lhs: GridCell, rhs: GridCell) -> Bool {
         lhs.properties.gridPosition == rhs.properties.gridPosition
@@ -18,18 +24,15 @@ class GridCell: CustomDebugStringConvertible {
 }
 
 struct GridCellProperties: CustomDebugStringConvertible {
+    let debugDescription: String
     let gridAbsoluteIndex: Int
     let gridPosition: KGPoint
 
-    static let zero = GridCellProperties(0)
-
-    let debugDescription: String
-
-    init(_ absoluteIndex: Int) {
+    init(_ absoluteIndex: Int, gridPosition: KGPoint) {
         self.gridAbsoluteIndex = absoluteIndex
-        self.gridPosition = Grid.gridPosition(of: absoluteIndex)
+        self.gridPosition = gridPosition
 
-        debugDescription =
+        self.debugDescription =
             String(format: "%04d:", gridAbsoluteIndex) + "\(gridPosition)"
     }
 }

@@ -1,10 +1,10 @@
 struct GridIndexer {
-    enum LikeCSS { case rightBottom, rightTop, bottom, left, top }
-
     private let cCellsWithinSenseRange: Int
     private let indexedGridPoints: [KGPoint]
+    private let locator: GridCellLocator
 
-    init(cMaxSenseRings: Int) {
+    init(locator: GridCellLocator, cMaxSenseRings: Int) {
+        self.locator = locator
         self.cCellsWithinSenseRange = GridIndexer.cellsWithinSenseRange(cMaxSenseRings)
 
         var p = [KGPoint]()
@@ -16,7 +16,9 @@ struct GridIndexer {
 
         indexedGridPoints = p
     }
+}
 
+extension GridIndexer {
     static func cellsWithinSenseRange(_ cSenseRings: Int) -> Int {
         let cCellsPerSide = 1 + 2 * cSenseRings
         return cCellsPerSide * cCellsPerSide
@@ -35,7 +37,7 @@ struct GridIndexer {
         return asteroidize(virtualGridPosition)
     }
 
-    static func offsetToLocalIndex(_ offset: KGPoint) -> Int {
+    func offsetToLocalIndex(_ offset: KGPoint) -> Int {
         let whichRing = max(abs(offset.x), abs(offset.y))
 
         let result: Int
@@ -65,19 +67,19 @@ struct GridIndexer {
 
 extension GridIndexer {
     func first(
-        fromCenterAt absoluteGridIndex: Int, cCells: Int,
+        fromCellAt absoluteIndex: Int, cCells: Int,
         where predicate: @escaping (Grid.AsteroidPoint) -> Bool
     ) -> Grid.AsteroidPoint? {
-        let centerCell = Grid.cellAt(absoluteGridIndex)
-        return first(fromCenterAt: centerCell, cCells: cCells, where: predicate)
+        let centerCell = locator.cellAt(absoluteIndex)
+        return first(from: centerCell, cCells: cCells, where: predicate)
     }
 
     func first(
-        fromCenterAt centerCell: GridCell, cCells: Int,
+        from centerCell: GridCell, cCells: Int,
         where predicate: @escaping (Grid.AsteroidPoint) -> Bool
     ) -> Grid.AsteroidPoint? {
         var asteroid = Grid.AsteroidPoint(
-            realCell: Grid.cellAt(0),
+            realCell: centerCell,
             relativeVirtualPosition: KGPoint.zero
         )
 
@@ -105,11 +107,11 @@ private extension GridIndexer {
             (a > gridDimension / 2) ? sign * (a - gridDimension) : nil
         }
 
-        if let nx = warp(ax, Grid.gridDimensionsCells.width, newX, sx) { newX = nx }
-        if let ny = warp(ay, Grid.gridDimensionsCells.height, newY, sy) { newY = ny }
+        if let nx = warp(ax, locator.gridDimensionsCells.width, newX, sx) { newX = nx }
+        if let ny = warp(ay, locator.gridDimensionsCells.height, newY, sy) { newY = ny }
 
         let realGridPosition = KGPoint(x: newX, y: newY)
-        let realCell = Grid.cellAt(realGridPosition)
+        let realCell = locator.cellAt(realGridPosition)
 
         return realGridPosition == virtualGridPosition ?
             Grid.AsteroidPoint(
@@ -125,6 +127,8 @@ private extension GridIndexer {
 }
 
 private extension GridIndexer {
+    enum LikeCSS { case rightBottom, rightTop, bottom, left, top }
+
     static func makeIndexedGridPoint(_ targetIndex: Int) -> KGPoint {
         if targetIndex == 0 { return KGPoint.zero }
 

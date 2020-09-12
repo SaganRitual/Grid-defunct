@@ -1,61 +1,66 @@
 import Foundation
 
+/// Defines a grid of cells and functions for working with it
 struct Grid {
-    static private(set) var theGrid: Grid!
-    static private(set) var gridDimensionsCells: KGSize!
+    private let indexer: GridIndexer
+    private let locator: GridCellLocator
 
-    let theCells: [GridCell]
-    let indexer: GridIndexer
+    /// Instantiate a 2-dimensional grid of cells with the origin (0, 0) in
+    /// the center
+    ///
+    /// - Parameters:
+    ///   - gridDimensionsCells: the desired size of the grid.
+    ///   - cMaxSenseRings: the number of rings for the indexer to create. See
+    ///   notes on the indexer for details.
+    ///
+    /// Note that the size of the grid will be adjusted downward as necessary
+    /// to ensure that (0, 0) is the center cell, with the same number of cells
+    /// above as below, and on the right as on the left.
+    init(_ gridDimensionsCells: KGSize, cMaxSenseRings: Int = 1) {
+        self.locator = .init(
+            gridDimensionsCells: gridDimensionsCells
+        )
 
-    static func makeGrid(_ gridDimensionsCells: KGSize, cMaxSenseRings: Int = 1) {
-        let wc_ = gridDimensionsCells.width
-        let hc_ = gridDimensionsCells.height
-
-        // Ensure odd width and height, such that (0, 0) is a cell at the
-        // center of the grid, and such that there are the same number of cells
-        // above (0, 0) as below, and the same number of cells to the right as
-        // to the left.
-        let wc = wc_ - ((wc_ % 2) == 0 ? 1 : 0)
-        let hc = hc_ - ((hc_ % 2) == 0 ? 1 : 0)
-
-        Grid.gridDimensionsCells = KGSize(width: wc, height: hc)
-
-        theGrid = .init(cMaxSenseRings)
+        self.indexer = .init(
+            locator: self.locator, cMaxSenseRings: cMaxSenseRings
+        )
     }
 
-    private init(_ cMaxSenseRings: Int) {
-        self.indexer = .init(cMaxSenseRings: cMaxSenseRings)
+    func area() -> Int { locator.gridDimensionsCells.area() }
+}
 
-        let cCells = Grid.gridDimensionsCells.area()
-        self.theCells = Grid.setupCells(cCells)
-    }
-
-    static private func setupCells(_ cCells: Int) -> [GridCell] {
-        var theCells = [GridCell]()
-        theCells.reserveCapacity(cCells)
-
-        for cellAbsoluteIndex in 0..<cCells {
-            theCells.append(GridCell(cellAbsoluteIndex))
-        }
-
-        return theCells
+extension Grid {
+    func cellAt(_ absoluteIndex: Int) -> GridCell { locator.cellAt(absoluteIndex) }
+    func cellAt(_ position: KGPoint) -> GridCell { locator.cellAt(position) }
+    func cellAt(_ localIx: Int, from center: GridCell) -> Grid.AsteroidPoint {
+        indexer.localIndexToRealGrid(localIx, from: center)
     }
 }
 
 extension Grid {
-    static func cellAt(_ absoluteIndex: Int) -> GridCell {
-        theGrid.theCells[absoluteIndex]
-    }
-
-    static func cellAt(_ position: KGPoint) -> GridCell {
-        cellAt(absoluteIndex(of: position))
-    }
-
-    static func cellAt(
+    func localIndexToRealGrid(
         _ localIx: Int, from center: GridCell
     ) -> Grid.AsteroidPoint {
-        theGrid.indexer.localIndexToRealGrid(localIx, from: center)
+        return indexer.localIndexToRealGrid(localIx, from: center)
     }
+
+    func localIndexToVirtualGrid(
+        _ localIx: Int, from center: GridCell
+    ) -> KGPoint {
+        return indexer.localIndexToVirtualGrid(localIx, from: center)
+    }
+}
+
+extension Grid {
+    func absoluteIndex(of position: KGPoint) -> Int { locator.absoluteIndex(of: position) }
+    func gridPosition(of index: Int) -> KGPoint { locator.gridPosition(of: index) }
+
+    func randomCellIndex() -> Int {
+        let cCellsInGrid = locator.gridDimensionsCells.area()
+        return Int.random(in: 0..<cCellsInGrid)
+    }
+
+    func randomCell() -> GridCell { cellAt(randomCellIndex()) }
 }
 
 extension Grid {
@@ -64,62 +69,21 @@ extension Grid {
         let relativeVirtualPosition: KGPoint
     }
     
-    static func first(
+    func first(
         fromCenterAt absoluteGridIndex: Int, cCells: Int,
         where predicate: @escaping (AsteroidPoint) -> Bool
     ) -> AsteroidPoint? {
-        theGrid.indexer.first(
-            fromCenterAt: absoluteGridIndex, cCells: cCells, where: predicate
+        indexer.first(
+            fromCellAt: absoluteGridIndex, cCells: cCells, where: predicate
         )
     }
 
-    static func first(
+    func first(
         fromCenterAt centerCell: GridCell, cCells: Int,
         where predicate: @escaping (AsteroidPoint) -> Bool
     ) -> AsteroidPoint? {
-        theGrid.indexer.first(
-            fromCenterAt: centerCell, cCells: cCells, where: predicate
+        indexer.first(
+            from: centerCell, cCells: cCells, where: predicate
         )
-    }
-}
-
-extension Grid {
-    static func absoluteIndex(of position: KGPoint) -> Int {
-        let halfHeight = Grid.gridDimensionsCells.height / 2
-        let yy = halfHeight - position.y
-
-        let halfWidth = Grid.gridDimensionsCells.width / 2
-        return (yy * Grid.gridDimensionsCells.width) + (halfWidth + position.x)
-    }
-
-    static func gridPosition(of index: Int) -> KGPoint {
-        let halfWidth = gridDimensionsCells.width / 2
-        let halfHeight = gridDimensionsCells.height / 2
-
-        let y = halfHeight - (index / gridDimensionsCells.width)
-        let x = (index % gridDimensionsCells.width) - halfWidth
-
-        return KGPoint(x: x, y: y)
-    }
-
-    static func randomCellIndex() -> Int {
-        let cCellsInGrid = gridDimensionsCells.area()
-        return Int.random(in: 0..<cCellsInGrid)
-    }
-
-    static func randomCell() -> GridCell { cellAt(randomCellIndex()) }
-}
-
-extension Grid {
-    static func localIndexToRealGrid(
-        _ localIx: Int, from center: GridCell
-    ) -> Grid.AsteroidPoint {
-        return theGrid.indexer.localIndexToRealGrid(localIx, from: center)
-    }
-
-    static func localIndexToVirtualGrid(
-        _ localIx: Int, from center: GridCell
-    ) -> KGPoint {
-        return theGrid.indexer.localIndexToVirtualGrid(localIx, from: center)
     }
 }

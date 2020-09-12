@@ -4,8 +4,18 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("Hello, World!")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        VStack {
+            ForEach(0..<5) { _ in
+                HStack {
+                    ForEach(0..<5) { _ in
+                        Rectangle()
+                            .foregroundColor(.blue)
+                            .padding(-3)
+                    }
+                }
+            }
+        }.frame(width: 400, height: 400)
+        .padding(7)
     }
 }
 
