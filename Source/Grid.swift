@@ -68,7 +68,7 @@ extension Grid {
         let realCell: GridCell
         let relativeVirtualPosition: KGPoint
     }
-    
+
     func first(
         fromCenterAt absoluteGridIndex: Int, cCells: Int,
         where predicate: @escaping (AsteroidPoint) -> Bool

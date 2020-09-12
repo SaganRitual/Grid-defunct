@@ -28,6 +28,12 @@
 		D443DB54250ACFB900585F7C /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB52250ACFB900585F7C /* Utilities.swift */; };
 		D443DB59250D4A5C00585F7C /* GridCellLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB58250D480C00585F7C /* GridCellLocator.swift */; };
 		D443DB5A250D4A5D00585F7C /* GridCellLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB58250D480C00585F7C /* GridCellLocator.swift */; };
+		D443DB60250D69BD00585F7C /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = D443DB5D250D69BD00585F7C /* .swiftlint.yml */; };
+		D443DB61250D69BD00585F7C /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = D443DB5D250D69BD00585F7C /* .swiftlint.yml */; };
+		D443DB62250D69BD00585F7C /* swiftlint.sh in Resources */ = {isa = PBXBuildFile; fileRef = D443DB5E250D69BD00585F7C /* swiftlint.sh */; };
+		D443DB63250D69BD00585F7C /* swiftlint.sh in Resources */ = {isa = PBXBuildFile; fileRef = D443DB5E250D69BD00585F7C /* swiftlint.sh */; };
+		D443DB64250D69BD00585F7C /* .overcommit.yml in Resources */ = {isa = PBXBuildFile; fileRef = D443DB5F250D69BD00585F7C /* .overcommit.yml */; };
+		D443DB65250D69BD00585F7C /* .overcommit.yml in Resources */ = {isa = PBXBuildFile; fileRef = D443DB5F250D69BD00585F7C /* .overcommit.yml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +75,9 @@
 		D443DB4D250ACF8F00585F7C /* Overload2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Overload2D.swift; sourceTree = "<group>"; };
 		D443DB52250ACFB900585F7C /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		D443DB58250D480C00585F7C /* GridCellLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCellLocator.swift; sourceTree = "<group>"; };
+		D443DB5D250D69BD00585F7C /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
+		D443DB5E250D69BD00585F7C /* swiftlint.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = swiftlint.sh; sourceTree = "<group>"; };
+		D443DB5F250D69BD00585F7C /* .overcommit.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .overcommit.yml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +108,9 @@
 		D443DAFC250AB70B00585F7C = {
 			isa = PBXGroup;
 			children = (
+				D443DB5F250D69BD00585F7C /* .overcommit.yml */,
+				D443DB5D250D69BD00585F7C /* .swiftlint.yml */,
+				D443DB5E250D69BD00585F7C /* swiftlint.sh */,
 				D443DB37250AB7B400585F7C /* Source */,
 				D443DB07250AB70B00585F7C /* Grid */,
 				D443DB1D250AB70C00585F7C /* GridTests */,
@@ -190,6 +202,7 @@
 				D443DB01250AB70B00585F7C /* Sources */,
 				D443DB02250AB70B00585F7C /* Frameworks */,
 				D443DB03250AB70B00585F7C /* Resources */,
+				D443DB5C250D699000585F7C /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -283,7 +296,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D443DB64250D69BD00585F7C /* .overcommit.yml in Resources */,
+				D443DB60250D69BD00585F7C /* .swiftlint.yml in Resources */,
 				D443DB13250AB70C00585F7C /* Main.storyboard in Resources */,
+				D443DB62250D69BD00585F7C /* swiftlint.sh in Resources */,
 				D443DB10250AB70C00585F7C /* Preview Assets.xcassets in Resources */,
 				D443DB0D250AB70C00585F7C /* Assets.xcassets in Resources */,
 			);
@@ -293,6 +309,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D443DB65250D69BD00585F7C /* .overcommit.yml in Resources */,
+				D443DB61250D69BD00585F7C /* .swiftlint.yml in Resources */,
+				D443DB63250D69BD00585F7C /* swiftlint.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -304,6 +323,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D443DB5C250D699000585F7C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/Users/rob/Projects/Library/Grid/swiftlint.sh\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D443DB01250AB70B00585F7C /* Sources */ = {
