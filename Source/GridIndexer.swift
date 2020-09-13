@@ -67,15 +67,7 @@ extension GridIndexer {
 
 extension GridIndexer {
     func first(
-        fromCellAt absoluteIndex: Int, cCells: Int,
-        where predicate: @escaping (Grid.AsteroidPoint) -> Bool
-    ) -> Grid.AsteroidPoint? {
-        let centerCell = locator.cellAt(absoluteIndex)
-        return first(from: centerCell, cCells: cCells, where: predicate)
-    }
-
-    func first(
-        from centerCell: GridCell, cCells: Int,
+        from centerCell: GridCell, cMaxCells: Int,
         where predicate: @escaping (Grid.AsteroidPoint) -> Bool
     ) -> Grid.AsteroidPoint? {
         var asteroid = Grid.AsteroidPoint(
@@ -83,7 +75,7 @@ extension GridIndexer {
             relativeVirtualPosition: KGPoint.zero
         )
 
-        let ix = (0..<cCells).first { localIndex in
+        let ix = (0..<cMaxCells).first { localIndex in
             asteroid = localIndexToRealGrid(localIndex, from: centerCell)
 
             return predicate(asteroid)

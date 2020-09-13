@@ -22,52 +22,46 @@ struct GridCellLocator {
         self.theCells = GridCellLocator.setupCells(self.gridDimensionsCells)
     }
 
-    static private func setupCells(_ gridDimensionsCells: KGSize) -> [GridCell] {
+    func cellAt(_ position: KGPoint) -> GridCell {
+        cellAt(absoluteIndex(of: position))
+    }
+}
+
+extension GridCellLocator {
+    func isOnGrid(_ position: KGPoint) -> Bool {
+        position.x >= -gridDimensionsCells.width / 2 &&
+        position.x <= gridDimensionsCells.width / 2 &&
+        position.y >= -gridDimensionsCells.height / 2 &&
+        position.y <= gridDimensionsCells.height / 2
+    }
+}
+
+private extension GridCellLocator {
+    func absoluteIndex(of position: KGPoint) -> Int {
+        let halfHeight = gridDimensionsCells.height / 2
+        let yy = halfHeight - position.y
+
+        let halfWidth = gridDimensionsCells.width / 2
+        let ix = (yy * gridDimensionsCells.width) + (halfWidth + position.x)
+
+        return ix
+    }
+
+    func cellAt(_ absoluteIndex: Int) -> GridCell { theCells[absoluteIndex] }
+
+    static func setupCells(_ gridDimensionsCells: KGSize) -> [GridCell] {
         let cCells = gridDimensionsCells.area()
 
         var theCells = [GridCell]()
         theCells.reserveCapacity(cCells)
 
-        for cellAbsoluteIndex in 0..<cCells {
-            let cell = GridCell(cellAbsoluteIndex, gridDimensionsCells)
+        for ix in 0..<cCells {
+            let p = gridPosition(of: ix, gridDimensionsCells: gridDimensionsCells)
+            let cell = GridCell(gridPosition: p)
             theCells.append(cell)
         }
 
         return theCells
-    }
-}
-
-extension GridCellLocator {
-    func cellAt(_ absoluteIndex: Int) -> GridCell { theCells[absoluteIndex] }
-
-    func cellAt(_ position: KGPoint) -> GridCell {
-        cellAt(
-            GridCellLocator.absoluteIndex(
-                of: position, gridDimensionsCells: gridDimensionsCells
-            )
-        )
-    }
-}
-
-extension GridCellLocator {
-    func absoluteIndex(of position: KGPoint) -> Int {
-        GridCellLocator.absoluteIndex(
-            of: position, gridDimensionsCells: self.gridDimensionsCells
-        )
-    }
-
-    static func absoluteIndex(of position: KGPoint, gridDimensionsCells: KGSize) -> Int {
-        let halfHeight = gridDimensionsCells.height / 2
-        let yy = halfHeight - position.y
-
-        let halfWidth = gridDimensionsCells.width / 2
-        return (yy * gridDimensionsCells.width) + (halfWidth + position.x)
-    }
-
-    func gridPosition(of index: Int) -> KGPoint {
-        GridCellLocator.gridPosition(
-            of: index, gridDimensionsCells: self.gridDimensionsCells
-        )
     }
 
     static func gridPosition(of index: Int, gridDimensionsCells: KGSize) -> KGPoint {
@@ -79,11 +73,4 @@ extension GridCellLocator {
 
         return KGPoint(x: x, y: y)
     }
-
-    func randomCellIndex() -> Int {
-        let cCellsInGrid = gridDimensionsCells.area()
-        return Int.random(in: 0..<cCellsInGrid)
-    }
-
-    func randomCell() -> GridCell { cellAt(randomCellIndex()) }
 }

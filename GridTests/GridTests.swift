@@ -4,6 +4,9 @@ import XCTest
 @testable import Grid
 
 class GridTests: XCTestCase {
+    let side: Int = 99
+    var half: Int { side / 2 }
+
     override func setUpWithError() throws {
     }
 
@@ -12,52 +15,12 @@ class GridTests: XCTestCase {
     }
 
     func testForSmoke() throws {
-        let dimensions = KGSize(width: 100, height: 100)
+        let dimensions = KGSize(width: side, height: side)
         let grid = Grid(dimensions)
-        let area = grid.area()
-        let expectedArea = 99 * 99  // Because grid likes odd
+        let expectedArea = (side - 1) * (side - 1)  // Because grid likes odd
         XCTAssert(
-            area == expectedArea,
-            "100 x 100 grid should contain \(expectedArea) cells, got \(area)"
-        )
-    }
-
-    func testPositionCalculations() throws {
-        let dimensions = KGSize(width: 100, height: 100)
-        let grid = Grid(dimensions)
-
-        let c1 = grid.cellAt(0)
-        XCTAssert(
-            c1.properties.gridPosition == KGPoint(x: -49, y: 49),
-            "Cell 0 should be in the upper-left corner of the grid (x: -49, y: 49)"
-        )
-
-        let c2 = grid.cellAt(KGPoint.zero)
-        let expectedIx = (49 * 99) + 49 // halfway down and halfway across
-        XCTAssert(
-            c2.properties.gridAbsoluteIndex == expectedIx,
-            "Cell at (0, 0) should be in the center"
-            + " of the grid abs index \(expectedIx)"
-            + ", got \(c2.properties.gridAbsoluteIndex)"
-        )
-
-        let c3 = grid.cellAt(99 * 99 - 1)
-        let expectedPosition = KGPoint(x: 49, y: -49)
-        XCTAssert(
-            c3.properties.gridPosition == expectedPosition,
-            "Cell at index \(99 * 99 - 1)"
-            + " should be in the lower right corner"
-            + " of the grid \(expectedPosition)"
-            + ", got \(c3.properties.gridPosition)"
-        )
-
-        let c4 = grid.randomCell()
-        let c5 = grid.cellAt(c4.properties.gridAbsoluteIndex)
-        let c6 = grid.cellAt(c5.properties.gridPosition)
-        let c7 = grid.cellAt(c5.properties.gridAbsoluteIndex)
-        XCTAssert(
-            c4 == c5 && c5 == c6 && c6 == c7,
-            "Conversion between absolute index to grid position failed"
+            grid.area == expectedArea,
+            "\(side) x \(side) grid should contain \(expectedArea) cells, got \(grid.area)"
         )
     }
 
@@ -66,16 +29,16 @@ class GridTests: XCTestCase {
     }
 
     func testIndexer() throws {
-        let dimensions = KGSize(width: 100, height: 100)
+        let dimensions = KGSize(width: side, height: side)
         let grid = Grid(dimensions)
 
-        let f1 = grid.cellAt(KGPoint(x: 21, y: -13)) // Random point
+        let f1 = grid.cellAt(KGPoint(x: Int.random(in: -half...half), y: Int.random(in: -half...half)))
         let f2 = grid.cellAt(f1.properties.gridPosition + KGPoint(x: 1, y: 1))
 
         let food = Food()
         f2.contents = food
 
-        let f3 = grid.first(fromCenterAt: f1, cCells: 9) { asteroid in
+        let f3 = grid.first(fromCenterAt: f1, cMaxCells: 9) { asteroid in
             (asteroid.realCell.contents as? Food) != nil
         }
 
@@ -86,7 +49,7 @@ class GridTests: XCTestCase {
 
         f2.contents = nil
 
-        let f4 = grid.first(fromCenterAt: f1, cCells: 9) { asteroid in
+        let f4 = grid.first(fromCenterAt: f1, cMaxCells: 9) { asteroid in
             (asteroid.realCell.contents as? Food) != nil
         }
 
@@ -94,14 +57,14 @@ class GridTests: XCTestCase {
     }
 
     func testAsteroidsUpperLeft() throws {
-        let dimensions = KGSize(width: 100, height: 100)
+        let dimensions = KGSize(width: side, height: side)
         let grid = Grid(dimensions)
 
-        let c1 = grid.cellAt(0)
+        let c1 = grid.cellAt(KGPoint(x: -half, y: half))
 
         // Use scalar index to grab the cells adjacent to c1
         let adjacentCells = (0..<9).map {
-            grid.localIndexToRealGrid($0, from: c1)
+            grid.cellAt($0, from: c1)
         }
 
         // Check virtual positions
@@ -120,10 +83,10 @@ class GridTests: XCTestCase {
 
         // Check real positions
         let realPositionsOk = [
-            KGPoint(x: -49, y: +49), KGPoint(x: -48, y: +49),
-            KGPoint(x: -48, y: +48), KGPoint(x: -49, y: +48), KGPoint(x: +49, y: +48),
-            KGPoint(x: +49, y: +49), KGPoint(x: +49, y: -49), KGPoint(x: -49, y: -49),
-            KGPoint(x: -48, y: -49)
+            KGPoint(x: -half, y: +half), KGPoint(x: -(half - 1), y: +half),
+            KGPoint(x: -(half - 1), y: +(half - 1)), KGPoint(x: -half, y: +(half - 1)), KGPoint(x: +half, y: +(half - 1)),
+            KGPoint(x: +half, y: +half), KGPoint(x: +half, y: -half), KGPoint(x: -half, y: -half),
+            KGPoint(x: -(half - 1), y: -half)
         ].enumerated().allSatisfy {
             adjacentCells[$0].realCell.properties.gridPosition == $1
         }
@@ -135,14 +98,14 @@ class GridTests: XCTestCase {
     }
 
     func testAsteroidsLowerRight() throws {
-        let dimensions = KGSize(width: 100, height: 100)
+        let dimensions = KGSize(width: side, height: side)
         let grid = Grid(dimensions)
 
-        let c1 = grid.cellAt(99 * 99 - 1)
+        let c1 = grid.cellAt(KGPoint(x: half, y: -half))
 
         // Use scalar index to grab the cells adjacent to c1
         let adjacentCells = (0..<9).map {
-            grid.localIndexToRealGrid($0, from: c1)
+            grid.cellAt($0, from: c1)
         }
 
         // Check virtual positions; simple offset from center
@@ -161,10 +124,10 @@ class GridTests: XCTestCase {
 
         // Check real positions, wrapped to other side of grid as necessary
         let realPositionsOk = [
-            KGPoint(x: +49, y: -49), KGPoint(x: -49, y: -49),
-            KGPoint(x: -49, y: +49), KGPoint(x: +49, y: +49), KGPoint(x: +48, y: +49),
-            KGPoint(x: +48, y: -49), KGPoint(x: +48, y: -48), KGPoint(x: +49, y: -48),
-            KGPoint(x: -49, y: -48)
+            KGPoint(x: +half, y: -half), KGPoint(x: -half, y: -half),
+            KGPoint(x: -half, y: +half), KGPoint(x: +half, y: +half), KGPoint(x: +(half - 1), y: +half),
+            KGPoint(x: +(half - 1), y: -half), KGPoint(x: +(half - 1), y: -(half - 1)), KGPoint(x: +half, y: -(half - 1)),
+            KGPoint(x: -half, y: -(half - 1))
         ].enumerated().allSatisfy {
             adjacentCells[$0].realCell.properties.gridPosition == $1
         }
