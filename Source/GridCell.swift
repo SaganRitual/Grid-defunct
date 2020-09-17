@@ -1,6 +1,6 @@
 import Foundation
 
-protocol GridCellContents: class {
+protocol GridCellContents: class, CustomDebugStringConvertible {
 
 }
 

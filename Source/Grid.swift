@@ -17,6 +17,11 @@ public struct Grid {
     /// to ensure that (0, 0) is the center cell, with the same number of cells
     /// above as below, and on the right as on the left.
     public init(_ gridDimensionsCells: KGSize, cMaxSenseRings: Int = 1) {
+        precondition(
+            gridDimensionsCells.width % 2 == 1 && gridDimensionsCells.height % 2 == 1,
+            "Width and height of the grid must both be odd"
+        )
+
         self.locator = .init(
             gridDimensionsCells: gridDimensionsCells
         )
@@ -63,13 +68,56 @@ extension Grid {
     ///
     /// - Parameters:
     ///   - localIx: The index to offset from the center
+    ///   - center: The position of cell to use as the center; a typical use for this
+    ///     function is to enable your game gremlin to read information ("sensory"
+    ///     input) in the surrounding cells, out to any arbitrary distance
+    ///
+    /// - Returns: If there is such a cell, the cell is returned; if the computed
+    ///             position is off the grid, returns nil
+    public func cellAt(_ localIx: Int, from centerPoint: KGPoint) -> GridCell? {
+        let ap: AsteroidPoint = asteroidPoint(localIx, from: centerPoint)
+        return ap.isOnGrid ? ap.realCell : nil
+    }
+
+    /// Gets the cell at the "ring index" relative to the indicated cell
+    ///
+    /// - Parameters:
+    ///   - localIx: The index to offset from the center
+    ///   - center: The position of cell to use as the center; a typical use for this
+    ///     function is to enable your game gremlin to read information ("sensory"
+    ///     input) in the surrounding cells, out to any arbitrary distance
+    ///
+    /// - Returns: If there is such a cell, the cell is returned; if the computed
+    ///             position is off the grid, returns nil
+    public func cellAt(_ localIx: Int, from centerCell: GridCell) -> GridCell? {
+        cellAt(localIx, from: centerCell.properties.gridPosition)
+    }
+
+    /// Gets the cell at the "ring index" relative to the indicated cell
+    ///
+    /// - Parameters:
+    ///   - localIx: The index to offset from the center
+    ///   - center: The position of cell to use as the center; a typical use for this
+    ///     function is to enable your game gremlin to read information ("sensory"
+    ///     input) in the surrounding cells, out to any arbitrary distance
+    ///
+    /// - Returns: An AsteroidPoint with real cell and virtual grid position
+    public func asteroidPoint(_ localIx: Int, from centerPoint: KGPoint) -> Grid.AsteroidPoint {
+        let centerCell = cellAt(centerPoint)
+        return indexer.localIndexToRealGrid(localIx, from: centerCell)
+    }
+
+    /// Gets the cell at the "ring index" relative to the indicated cell
+    ///
+    /// - Parameters:
+    ///   - localIx: The index to offset from the center
     ///   - center: The cell to use as the center; a typical use for this
     ///     function is to enable your game gremlin to read information ("sensory"
     ///     input) in the surrounding cells, out to any arbitrary distance
     ///
-    /// - Returns: The indicated cell
-    public func cellAt(_ localIx: Int, from center: GridCell) -> Grid.AsteroidPoint {
-        indexer.localIndexToRealGrid(localIx, from: center)
+    /// - Returns: An AsteroidPoint with real cell and virtual grid position
+    public func asteroidPoint(_ localIx: Int, from centerCell: GridCell) -> Grid.AsteroidPoint {
+        asteroidPoint(localIx, from: centerCell.properties.gridPosition)
     }
 }
 
@@ -87,6 +135,8 @@ extension Grid {
     public struct AsteroidPoint {
         let realCell: GridCell
         let relativeVirtualPosition: KGPoint
+
+        var isOnGrid: Bool { realCell.properties.gridPosition == relativeVirtualPosition }
     }
 
     /// Find the first cell from among the cells surrounding the center that
