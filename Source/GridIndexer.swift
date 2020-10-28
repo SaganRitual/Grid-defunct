@@ -24,13 +24,19 @@ extension GridIndexer {
         return cCellsPerSide * cCellsPerSide
     }
 
+    func localIndexToRealGrid(
+        _ localIx: Int, from center: GridCell
+    ) -> KGPoint {
+        indexedGridPoints[localIx] + center.properties.gridPosition
+    }
+
     func localIndexToVirtualGrid(
         _ localIx: Int, from center: GridCell
     ) -> KGPoint {
         indexedGridPoints[localIx] + center.properties.gridPosition
     }
 
-    func localIndexToRealGrid(
+    func localIndexToAsteroidGrid(
         _ localIx: Int, from center: GridCell
     ) -> Grid.AsteroidPoint {
         let virtualGridPosition = localIndexToVirtualGrid(localIx, from: center)
@@ -76,7 +82,7 @@ extension GridIndexer {
         )
 
         let ix = (0..<cMaxCells).first { localIndex in
-            asteroid = localIndexToRealGrid(localIndex, from: centerCell)
+            asteroid = localIndexToAsteroidGrid(localIndex, from: centerCell)
 
             return predicate(asteroid)
         }

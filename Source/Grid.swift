@@ -16,11 +16,17 @@ public struct Grid {
     /// Note that the size of the grid will be adjusted downward as necessary
     /// to ensure that (0, 0) is the center cell, with the same number of cells
     /// above as below, and on the right as on the left.
-    public init(_ gridDimensionsCells: KGSize, cMaxSenseRings: Int = 1) {
+    public init(
+        _ gridDimensionsCells: KGSize,
+        cMaxSenseRings cMaxSenseRings_: Int? = nil
+    ) {
         precondition(
             gridDimensionsCells.width % 2 == 1 && gridDimensionsCells.height % 2 == 1,
             "Width and height of the grid must both be odd"
         )
+
+        let cMaxSenseRings =
+            cMaxSenseRings_ ?? ((gridDimensionsCells.width - 1) / 2)
 
         self.locator = .init(
             gridDimensionsCells: gridDimensionsCells
@@ -52,6 +58,17 @@ public struct Grid {
     public func makeIterator() -> IndexingIterator<[GridCell]> {
         locator.theCells.makeIterator()
     }
+
+    /// Mark all the cells as empty
+    /// - Note: The ranges are closed, because we really do want to go all
+    ///         the way, because of the zero row and zero column. See `init()`
+    public func resetAllCellContents() {
+        let w2 = width / 2, h2 = height / 2
+        
+        (-h2...h2).forEach { y in (-w2...w2).forEach { x in
+            cellAt(KGPoint(x: x, y: y)).contents = nil
+        }}
+    }
 }
 
 extension Grid {
@@ -75,8 +92,7 @@ extension Grid {
     /// - Returns: If there is such a cell, the cell is returned; if the computed
     ///             position is off the grid, returns nil
     public func cellAt(_ localIx: Int, from centerPoint: KGPoint) -> GridCell? {
-        let ap: AsteroidPoint = asteroidPoint(localIx, from: centerPoint)
-        return ap.isOnGrid ? ap.realCell : nil
+        cellAt(localIx, from: cellAt(centerPoint))
     }
 
     /// Gets the cell at the "ring index" relative to the indicated cell
@@ -90,7 +106,8 @@ extension Grid {
     /// - Returns: If there is such a cell, the cell is returned; if the computed
     ///             position is off the grid, returns nil
     public func cellAt(_ localIx: Int, from centerCell: GridCell) -> GridCell? {
-        cellAt(localIx, from: centerCell.properties.gridPosition)
+        let p = indexer.localIndexToRealGrid(localIx, from: centerCell)
+        return isOnGrid(p) ? cellAt(p) : nil
     }
 
     /// Gets the cell at the "ring index" relative to the indicated cell
@@ -103,8 +120,7 @@ extension Grid {
     ///
     /// - Returns: An AsteroidPoint with real cell and virtual grid position
     public func asteroidPoint(_ localIx: Int, from centerPoint: KGPoint) -> Grid.AsteroidPoint {
-        let centerCell = cellAt(centerPoint)
-        return indexer.localIndexToRealGrid(localIx, from: centerCell)
+        asteroidPoint(localIx, from: cellAt(centerPoint))
     }
 
     /// Gets the cell at the "ring index" relative to the indicated cell
@@ -117,7 +133,15 @@ extension Grid {
     ///
     /// - Returns: An AsteroidPoint with real cell and virtual grid position
     public func asteroidPoint(_ localIx: Int, from centerCell: GridCell) -> Grid.AsteroidPoint {
-        asteroidPoint(localIx, from: centerCell.properties.gridPosition)
+        return indexer.localIndexToAsteroidGrid(localIx, from: centerCell)
+    }
+
+    /// Get a random cell from the grid
+    /// - Returns: A random cell
+    public func randomCell() -> GridCell {
+        let w2 = width / 2, h2 = height / 2
+        let p = KGPoint(x: Int.random(in: -w2...w2), y: Int.random(in: -h2...h2))
+        return cellAt(p)
     }
 }
 
