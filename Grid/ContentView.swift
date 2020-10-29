@@ -3,6 +3,7 @@
 import SwiftUI
 
 class Gremlin: GridCellContents {
+    var debugDescription: String { "Gremlin \(rectangle), \(color)" }
     let color: Color
     let rectangle: Rectangle
 
@@ -61,7 +62,7 @@ struct ContentView: View {
             ForEach(0..<grid.height) { y in
                 HStack {
                     ForEach(0..<grid.width) { x in
-                        getGremlin(x - 3, y - 3).padding(-3)
+                        getGremlin(x - grid.width / 2, y - grid.height / 2).padding(-3)
                     }
                 }
             }
@@ -73,10 +74,10 @@ struct ContentView: View {
     var labels: some View {
         return ForEach(0..<grid.area) { ix in
             let centerCell = grid.cellAt(KGPoint.zero)
-            let ap = grid.cellAt(ix, from: centerCell)
-            let pp = pixelPosition(for: ap.realCell.properties.gridPosition)
+            let ap = grid.cellAt(ix, from: centerCell)!
+            let pp = pixelPosition(for: ap.properties.gridPosition)
 
-            Text("\(ap.realCell.properties.gridPosition.debugDescription)").position(pp)
+            Text("\(ap.properties.gridPosition.debugDescription)").position(pp)
         }
     }
 

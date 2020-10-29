@@ -64,7 +64,7 @@ public struct Grid {
     ///         the way, because of the zero row and zero column. See `init()`
     public func resetAllCellContents() {
         let w2 = width / 2, h2 = height / 2
-        
+
         (-h2...h2).forEach { y in (-w2...w2).forEach { x in
             cellAt(KGPoint(x: x, y: y)).contents = nil
         }}
