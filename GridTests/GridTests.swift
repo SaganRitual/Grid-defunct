@@ -17,7 +17,10 @@ class GridTests: XCTestCase {
     func testForSmoke() throws {
         let dimensions = KGSize(width: side, height: side)
         let grid = Grid(dimensions)
-        let expectedArea = (side - 1) * (side - 1)  // Because grid likes odd
+
+        // Because grid likes odd
+        let side = (self.side % 2 == 1) ? self.side : self.side - 1
+        let expectedArea = side * side
         XCTAssert(
             grid.area == expectedArea,
             "\(side) x \(side) grid should contain \(expectedArea) cells, got \(grid.area)"
@@ -25,6 +28,7 @@ class GridTests: XCTestCase {
     }
 
     class Food: GridCellContents {
+        var debugDescription: String { "So long, and thanks..." }
         let foodValue = 42
     }
 
@@ -64,7 +68,7 @@ class GridTests: XCTestCase {
 
         // Use scalar index to grab the cells adjacent to c1
         let adjacentCells = (0..<9).map {
-            grid.cellAt($0, from: c1)
+            grid.asteroidPoint($0, from: c1)
         }
 
         // Check virtual positions
@@ -105,7 +109,7 @@ class GridTests: XCTestCase {
 
         // Use scalar index to grab the cells adjacent to c1
         let adjacentCells = (0..<9).map {
-            grid.cellAt($0, from: c1)
+            grid.asteroidPoint($0, from: c1)
         }
 
         // Check virtual positions; simple offset from center
