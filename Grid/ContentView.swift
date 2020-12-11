@@ -2,7 +2,7 @@
 
 import SwiftUI
 
-class Gremlin: GridCellContents {
+class Gremlin {
     var debugDescription: String { "Gremlin \(rectangle), \(color)" }
     let color: Color
     let rectangle: Rectangle
@@ -13,8 +13,21 @@ class Gremlin: GridCellContents {
     }
 }
 
+class GremlinCell: GridCellProtocol {
+    weak var gremlin: Gremlin?
+    let gridPosition: GridPoint
+
+    init(gridPosition: GridPoint) { self.gridPosition = gridPosition }
+}
+
+struct GremlinCellFactory: GridCellFactoryProtocol {
+    func makeCell(gridPosition: GridPoint) -> GridCellProtocol {
+        GremlinCell(gridPosition: gridPosition)
+    }
+}
+
 struct ContentView: View {
-    let gridDimensionsCells = KGSize(width: 15, height: 15)
+    let gridDimensionsCells = GridSize(width: 15, height: 15)
     let gridDimensionsPixels: CGSize
     let cellDimensionsPixels: CGSize
     var gremlins: [Gremlin]
@@ -22,12 +35,18 @@ struct ContentView: View {
 
     init(_ gridDimensionsPixels: CGSize) {
         self.gridDimensionsPixels = gridDimensionsPixels
-        self.grid = Grid(gridDimensionsCells, cMaxSenseRings: 3)
+
+        self.grid = Grid(
+            size: gridDimensionsCells, cellFactory: GremlinCellFactory()
+        )
+
         cellDimensionsPixels = gridDimensionsPixels / gridDimensionsCells.asSize()
 
         self.gremlins = grid.makeIterator().map {
+            let cell = ($0 as? GremlinCell)!
+
             let color: Color
-            switch ($0.properties.gridPosition.x, $0.properties.gridPosition.y) {
+            switch (cell.gridPosition.x, cell.gridPosition.y) {
             case (-3, _): color = .white
             case (-2, -1...1): color = .yellow
             case (1, -1...1): color = .yellow
@@ -40,19 +59,25 @@ struct ContentView: View {
             default: color = .blue
             }
 
+            // Use separate variable because the cell's reference is weak.
+            // Don't want the Gremlin going out of scope
             let g = Gremlin(color)
-            $0.contents = g
+            cell.gremlin = g
             return g
         }
     }
 
-    func getGremlin(_ x: Int, _ y: Int) -> some View {
-        let cell = grid.cellAt(KGPoint(x: x, y: y))
-        let gremlin = (cell.contents as? Gremlin)!
-        return gremlin.rectangle.foregroundColor(gremlin.color)
+    func cellAt(x: Int, y: Int) -> GremlinCell {
+        let cell = grid.cellAt(GridPoint(x: x, y: y))
+        return (cell as? GremlinCell)!
     }
 
-    func pixelPosition(for gridPosition: KGPoint) -> CGPoint {
+    func getGremlin(_ x: Int, _ y: Int) -> some View {
+        let cell = cellAt(x: x, y: y)
+        return cell.gremlin!.rectangle.foregroundColor(cell.gremlin!.color)
+    }
+
+    func pixelPosition(for gridPosition: GridPoint) -> CGPoint {
         gridPosition.asPoint() + (gridDimensionsPixels.asPoint() / 2) +
         gridPosition.asPoint() * cellDimensionsPixels.asPoint()
     }
@@ -73,11 +98,11 @@ struct ContentView: View {
 
     var labels: some View {
         return ForEach(0..<grid.area) { ix in
-            let centerCell = grid.cellAt(KGPoint.zero)
+            let centerCell = grid.cellAt(GridPoint.zero)
             let ap = grid.cellAt(ix, from: centerCell)!
-            let pp = pixelPosition(for: ap.properties.gridPosition)
+            let pp = pixelPosition(for: ap.gridPosition)
 
-            Text("\(ap.properties.gridPosition.debugDescription)").position(pp)
+            Text("\(ap.gridPosition.debugDescription)").position(pp)
         }
     }
 
