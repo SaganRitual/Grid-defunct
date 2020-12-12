@@ -2,17 +2,17 @@
 
 import Foundation
 
-public protocol GridCellProtocol: class {
+protocol GridCellProtocol: class {
     var gridPosition: GridPoint { get }
 }
 
-public extension GridCellProtocol {
+extension GridCellProtocol {
     static func == (lhs: GridCellProtocol, rhs: GridCellProtocol) -> Bool {
         lhs.gridPosition == rhs.gridPosition
     }
 }
 
-public protocol GridCellFactoryProtocol {
+protocol GridCellFactoryProtocol {
     func makeCell(gridPosition: GridPoint) -> GridCellProtocol
 }
 

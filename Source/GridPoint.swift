@@ -1,16 +1,16 @@
 import Foundation
 
-public struct GridPoint: Overload2D, Numeric, Hashable {
-    public typealias IntegerLiteralType = Int
-    public typealias Magnitude = CGFloat
+struct GridPoint: Overload2D, Numeric, Hashable {
+    typealias IntegerLiteralType = Int
+    typealias Magnitude = CGFloat
 
     // swiftlint:disable unused_setter_value
     var aa: CGFloat { get { CGFloat(x) } set { } }
     var bb: CGFloat { get { CGFloat(y) } set { } }
     // swiftlint:enable unused_setter_value
 
-    public init?<T>(exactly source: T) where T : BinaryInteger { x = 0; y = 0 }
-    public init(integerLiteral value: Int) { x = value; y = value }
+    init?<T>(exactly source: T) where T : BinaryInteger { x = 0; y = 0 }
+    init(integerLiteral value: Int) { x = value; y = value }
 
     func asPoint() -> CGPoint { return CGPoint(x: x, y: y) }
 
@@ -20,7 +20,7 @@ public struct GridPoint: Overload2D, Numeric, Hashable {
 
     static func makeTuple(_ xx: CGFloat, _ yy: CGFloat) -> GridPoint { GridPoint(xx, yy) }
 
-    public var magnitude: CGFloat { sqrt(CGFloat(x * x + y * y)) }
+    var magnitude: CGFloat { sqrt(CGFloat(x * x + y * y)) }
 
     let x: Int; let y: Int
 
@@ -28,43 +28,43 @@ public struct GridPoint: Overload2D, Numeric, Hashable {
     init(x: Int, y: Int) { self.x = x; self.y = y }
     init(_ x: CGFloat, _ y: CGFloat) { self.x = Int(x); self.y = Int(y) }
 
-    public static let zero = GridPoint(x: 0, y: 0)
+    static let zero = GridPoint(x: 0, y: 0)
 
     func distance(to otherPoint: GridPoint) -> CGFloat {
         return (otherPoint - self).hypotenuse
     }
 
-    public static func random(_ xRange: Range<Int>, _ yRange: Range<Int>) -> GridPoint {
+    static func random(_ xRange: Range<Int>, _ yRange: Range<Int>) -> GridPoint {
         let xx = Int.random(in: xRange), yy = Int.random(in: yRange)
         return GridPoint(x: xx, y: yy)
     }
 
-    public static func + (_ lhs: GridPoint, _ rhs: GridPoint) -> GridPoint {
+    static func + (_ lhs: GridPoint, _ rhs: GridPoint) -> GridPoint {
         return GridPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
     }
 
-    public static func += (_ L: inout GridPoint, _ R: GridPoint) { L = L + R }
+    static func += (_ L: inout GridPoint, _ R: GridPoint) { L = L + R }
 
-    public static func - (_ lhs: GridPoint, _ rhs: GridPoint) -> GridPoint {
+    static func - (_ lhs: GridPoint, _ rhs: GridPoint) -> GridPoint {
         return GridPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
     }
 
-    public static func -= (_ L: inout GridPoint, _ R: GridPoint) { L = L - R }
+    static func -= (_ L: inout GridPoint, _ R: GridPoint) { L = L - R }
 
-    public static func * (_ lhs: GridPoint, _ rhs: Int) -> GridPoint {
+    static func * (_ lhs: GridPoint, _ rhs: Int) -> GridPoint {
         return GridPoint(x: lhs.x * rhs, y: lhs.y * rhs)
     }
 
-    public static func *= (_ L: inout GridPoint, _ R: GridPoint) { L = L * R }
+    static func *= (_ L: inout GridPoint, _ R: GridPoint) { L = L * R }
 }
 
 #if DEBUG
 extension GridPoint: CustomDebugStringConvertible {
-    public var debugDescription: String { String(format: "(%+d, %+d)", x, y) }
+    var debugDescription: String { String(format: "(%+d, %+d)", x, y) }
 }
 #endif
 
-public struct GridSize: Overload2D, Hashable {
+struct GridSize: Overload2D, Hashable {
     // swiftlint:disable unused_setter_value
     var aa: CGFloat { get { CGFloat(width) } set { } }
     var bb: CGFloat { get { CGFloat(height) } set { } }

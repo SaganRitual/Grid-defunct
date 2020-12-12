@@ -1,7 +1,7 @@
 import Foundation
 
 /// Defines a grid of cells and functions for navigating it
-public struct Grid {
+struct Grid {
     private let indexer: GridIndexer
     private let navigator: GridNavigator
 
@@ -15,7 +15,7 @@ public struct Grid {
     /// Note that the dimensions of the grid must be odd, to ensure that (0, 0)
     /// is the center cell, with the same number of cells above as below, and
     /// on the right as on the left.
-    public init(
+    init(
         size: GridSize,
         cellFactory: GridCellFactoryProtocol
     ) {
@@ -29,24 +29,24 @@ public struct Grid {
     }
 
     /// Conveniences to make the client code easier to read
-    public var area: Int { navigator.size.area() }
-    public var height: Int { navigator.size.height }
-    public var size: GridSize { GridSize(width: width, height: height) }
-    public var width: Int { navigator.size.width }
+    var area: Int { navigator.size.area() }
+    var height: Int { navigator.size.height }
+    var size: GridSize { GridSize(width: width, height: height) }
+    var width: Int { navigator.size.width }
 
     /// Indicates whether the specified position is on the grid
     ///
     /// - Parameter position: The position to check
     ///
     /// - Returns: A Bool indicating whether the point is on the grid
-    public func isOnGrid(_ position: GridPoint) -> Bool { locator.isOnGrid(position) }
+    func isOnGrid(_ position: GridPoint) -> Bool { navigator.isOnGrid(position) }
 
     /// For iterating over all the cells in the grid
     /// - Warning: Although the index is an Int, don't try to use it
     /// for calculating offsets or positions of cells. Instead, if you need
     /// to know the position of a cell, grab the cell using the iterator then
     /// get cell.properties.gridPosition
-    public func makeIterator() -> IndexingIterator<[GridCellProtocol]> {
+    func makeIterator() -> IndexingIterator<[GridCellProtocol]> {
         navigator.theCells.makeIterator()
     }
 }
@@ -59,7 +59,7 @@ extension Grid {
     ///     to the right
     ///
     /// - Returns: The indicated cell
-    public func cellAt(_ position: GridPoint) -> GridCellProtocol { locator.cellAt(position) }
+    func cellAt(_ position: GridPoint) -> GridCellProtocol { locator.cellAt(position) }
 
     /// Gets the cell at the "ring index" relative to the indicated cell
     ///
@@ -71,7 +71,7 @@ extension Grid {
     ///
     /// - Returns: If there is such a cell, the cell is returned; if the computed
     ///             position is off the grid, returns nil
-    public func cellAt(_ localIx: Int, from centerPoint: GridPoint) -> GridCellProtocol? {
+    func cellAt(_ localIx: Int, from centerPoint: GridPoint) -> GridCellProtocol? {
         cellAt(localIx, from: cellAt(centerPoint))
     }
 
@@ -85,7 +85,7 @@ extension Grid {
     ///
     /// - Returns: If there is such a cell, the cell is returned; if the computed
     ///             position is off the grid, returns nil
-    public func cellAt(_ localIx: Int, from centerCell: GridCellProtocol) -> GridCellProtocol? {
+    func cellAt(_ localIx: Int, from centerCell: GridCellProtocol) -> GridCellProtocol? {
         let p = indexer.localIndexToRealGrid(localIx, from: centerCell)
         return isOnGrid(p) ? cellAt(p) : nil
     }
@@ -99,7 +99,7 @@ extension Grid {
     ///     input) in the surrounding cells, out to any arbitrary distance
     ///
     /// - Returns: An AsteroidPoint with real cell and virtual grid position
-    public func asteroidPoint(_ localIx: Int, from centerPoint: GridPoint) -> Grid.AsteroidPoint {
+    func asteroidPoint(_ localIx: Int, from centerPoint: GridPoint) -> Grid.AsteroidPoint {
         asteroidPoint(localIx, from: cellAt(centerPoint))
     }
 
@@ -112,13 +112,13 @@ extension Grid {
     ///     input) in the surrounding cells, out to any arbitrary distance
     ///
     /// - Returns: An AsteroidPoint with real cell and virtual grid position
-    public func asteroidPoint(_ localIx: Int, from centerCell: GridCellProtocol) -> Grid.AsteroidPoint {
+    func asteroidPoint(_ localIx: Int, from centerCell: GridCellProtocol) -> Grid.AsteroidPoint {
         return indexer.localIndexToAsteroidGrid(localIx, from: centerCell)
     }
 
     /// Get a random cell from the grid
     /// - Returns: A random cell
-    public func randomCell() -> GridCellProtocol {
+    func randomCell() -> GridCellProtocol {
         let w2 = width / 2, h2 = height / 2
         let p = GridPoint(x: Int.random(in: -w2...w2), y: Int.random(in: -h2...h2))
         return cellAt(p)
@@ -136,7 +136,7 @@ extension Grid {
     ///   - relativeVirtualPosition: a position (not a cell) that's not on
     ///     the grid, where the gremlin would go if the grid were actually to
     ///     extend far enough
-    public struct AsteroidPoint {
+    struct AsteroidPoint {
         let realCell: GridCellProtocol
         let relativeVirtualPosition: GridPoint
 
@@ -153,7 +153,7 @@ extension Grid {
     ///   candidate cells.
     ///
     /// - Returns: The first qualifying cell, or `nil` if no qualifying cell is found
-    public func first(
+    func first(
         fromCenterAt centerCell: GridCellProtocol, cMaxCells: Int,
         where predicate: @escaping (AsteroidPoint) -> Bool
     ) -> AsteroidPoint? {
