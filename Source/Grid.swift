@@ -34,6 +34,16 @@ struct Grid {
     var size: GridSize { GridSize(width: width, height: height) }
     var width: Int { navigator.size.width }
 
+    /// Get the number of cells that would be covered by the indicated
+    /// number of rings
+    ///
+    /// - Parameter cRings: The number of rings to calculate
+    ///
+    /// - Returns: The number of cells in that many rings
+    static func cRingsToCells(cRings: Int) -> Int {
+        GridNavigator.cRingsToCells(cRings: cRings)
+    }
+
     /// Indicates whether the specified position is on the grid
     ///
     /// - Parameter position: The position to check
@@ -59,7 +69,7 @@ extension Grid {
     ///     to the right
     ///
     /// - Returns: The indicated cell
-    func cellAt(_ position: GridPoint) -> GridCellProtocol { locator.cellAt(position) }
+    func cellAt(_ position: GridPoint) -> GridCellProtocol { navigator.cellAt(position) }
 
     /// Gets the cell at the "ring index" relative to the indicated cell
     ///
@@ -118,11 +128,7 @@ extension Grid {
 
     /// Get a random cell from the grid
     /// - Returns: A random cell
-    func randomCell() -> GridCellProtocol {
-        let w2 = width / 2, h2 = height / 2
-        let p = GridPoint(x: Int.random(in: -w2...w2), y: Int.random(in: -h2...h2))
-        return cellAt(p)
-    }
+    func randomCell() -> GridCellProtocol { navigator.randomCell() }
 }
 
 extension Grid {

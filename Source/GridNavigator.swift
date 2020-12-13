@@ -32,6 +32,13 @@ struct GridNavigator {
     func cellAt(_ position: GridPoint) -> GridCellProtocol {
         cellAt(absoluteIndex(of: position))
     }
+
+    func randomCell() -> GridCellProtocol { theCells.randomElement()! }
+
+    static func cRingsToCells(cRings: Int) -> Int {
+        let cellsPerSide = (2 * cRings) + 1
+        return cellsPerSide * cellsPerSide
+    }
 }
 
 extension GridNavigator {
