@@ -111,7 +111,7 @@ private extension GridIndexer {
         if let ny = warp(ay, locator.size.height, newY, sy) { newY = ny }
 
         let realGridPosition = GridPoint(x: newX, y: newY)
-        let realCell = locator.cellAt(realGridPosition)
+        let realCell = locator.cell(at: realGridPosition)
 
         return realGridPosition == virtualGridPosition ?
             Grid.AsteroidPoint(

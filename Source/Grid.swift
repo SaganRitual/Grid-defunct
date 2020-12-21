@@ -5,26 +5,33 @@ struct Grid {
     private let indexer: GridIndexer
     private let navigator: GridNavigator
 
-    /// Instantiate a 2-dimensional grid of cells with the origin (0, 0) in
-    /// the center
+    /// Two-dimensional grid of cells
     ///
     /// - Parameters:
-    ///   - size: the desired size of the grid.
+    ///   - size: the desired size of the grid
+    ///   - cellLayoutType: full grid layout with (0, 0) at the center,
+    ///                     or quadrant I grid with (0, 0) at the lower left
     ///   - cellFactory: makes cells that adhere to GridCellProtocol
     ///
-    /// Note that the dimensions of the grid must be odd, to ensure that (0, 0)
-    /// is the center cell, with the same number of cells above as below, and
-    /// on the right as on the left.
+    /// Note that for the full grid, the dimensions of the grid must be odd,
+    /// to ensure that (0, 0) is the center cell, with the same number of cells
+    /// above as below, and on the right as on the left.
     init(
         size: GridSize,
+        cellLayoutType: GridNavigator.LayoutType,
         cellFactory: GridCellFactoryProtocol
     ) {
-        precondition(
-            size.width % 2 == 1 && size.height % 2 == 1,
-            "Width and height of the grid must both be odd"
+        if cellLayoutType == .fullGrid {
+            precondition(
+                size.width % 2 == 1 && size.height % 2 == 1,
+                "Width and height of the grid must both be odd"
+            )
+        }
+
+        self.navigator = .init(
+            size: size, layoutType: cellLayoutType, cellFactory: cellFactory
         )
 
-        self.navigator = .init(size: size, cellFactory: cellFactory)
         self.indexer = .init(size: size, locator: self.navigator)
     }
 
@@ -69,7 +76,7 @@ extension Grid {
     ///     to the right
     ///
     /// - Returns: The indicated cell
-    func cellAt(_ position: GridPoint) -> GridCellProtocol { navigator.cellAt(position) }
+    func cellAt(_ position: GridPoint) -> GridCellProtocol { navigator.cell(at: position) }
 
     /// Gets the cell at the "ring index" relative to the indicated cell
     ///
