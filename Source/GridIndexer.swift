@@ -83,7 +83,7 @@ extension GridIndexer {
             relativeVirtualPosition: GridPoint.zero
         )
 
-        let ix = (0..<cMaxCells).first { localIndex in
+        let ix = (1..<cMaxCells).first { localIndex in
             asteroid = localIndexToAsteroidGrid(localIndex, from: centerCell)
 
             return predicate(asteroid)

@@ -42,7 +42,11 @@ struct GridNavigator {
     }
 
     func cell(at position: GridPoint) -> GridCellProtocol {
-        theCells[layout.cellIndex(at: position)]
+         theCells[layout.cellIndex(at: position)]
+    }
+
+    func cellIndex(at position: GridPoint) -> Int {
+        layout.cellIndex(at: position)
     }
 
     func randomCell() -> GridCellProtocol { theCells.randomElement()! }

@@ -107,6 +107,17 @@ extension Grid {
         return isOnGrid(p) ? cellAt(p) : nil
     }
 
+    /// Gets the index of the cell at the indicated coordinates on the grid
+    ///
+    /// - Parameter position: The cell's position on the grid. The point (0, 0)
+    ///     is in the center of the grid, with y increasing upward and x increasing
+    ///     to the right
+    ///
+    /// - Returns: The index of the indicated cell
+    func cellIndex(at gridPosition: GridPoint) -> Int {
+        navigator.cellIndex(at: gridPosition)
+    }
+
     /// Gets the cell at the "ring index" relative to the indicated cell
     ///
     /// - Parameters:
@@ -172,6 +183,25 @@ extension Grid {
     ) -> AsteroidPoint? {
         indexer.first(
             from: centerCell, cMaxCells: cMaxCells, where: predicate
+        )
+    }
+
+    /// Find the first cell from among the cells surrounding the center that
+    /// results in `predicate(_: AsteroidPoint)` returning `true`
+    ///
+    /// - Parameters:
+    ///   - centerPosition: The GridPoint from which to offset
+    ///   - cMaxCells: The maximum number of cells to read for the search
+    ///   - predicate: Your function for testing the characteristics of
+    ///   candidate cells.
+    ///
+    /// - Returns: The first qualifying cell, or `nil` if no qualifying cell is found
+    func first(
+        fromCenterAt centerPosition: GridPoint, cMaxCells: Int,
+        where predicate: @escaping (AsteroidPoint) -> Bool
+    ) -> AsteroidPoint? {
+        indexer.first(
+            from: cellAt(centerPosition), cMaxCells: cMaxCells, where: predicate
         )
     }
 }
