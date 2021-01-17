@@ -7,7 +7,9 @@ class Gremlin {
     let color: Color
     let rectangle: Rectangle
 
-    init(_ color: Color = .blue) {
+    init(
+        _ color: Color = Color(.sRGB, red: 0, green: 0, blue: 1, opacity: 1)
+    ) {
         self.color = color
         self.rectangle = Rectangle()
     }
@@ -37,7 +39,9 @@ struct ContentView: View {
         self.gridDimensionsPixels = gridDimensionsPixels
 
         self.grid = Grid(
-            size: gridDimensionsCells, cellFactory: GremlinCellFactory()
+            size: gridDimensionsCells,
+            cellLayoutType: .fullGrid,
+            cellFactory: GremlinCellFactory()
         )
 
         cellDimensionsPixels = gridDimensionsPixels / gridDimensionsCells.asSize()
@@ -45,23 +49,9 @@ struct ContentView: View {
         self.gremlins = grid.makeIterator().map {
             let cell = ($0 as? GremlinCell)!
 
-            let color: Color
-            switch (cell.gridPosition.x, cell.gridPosition.y) {
-            case (-3, _): color = .white
-            case (-2, -1...1): color = .yellow
-            case (1, -1...1): color = .yellow
-            case (2, -1): color = .yellow
-            case (2, 1): color = .yellow
-            case (2, 0): color = .purple
-            case (3, 2...3): color = .white
-            case (3, (-3)...(-2)): color = .white
-            case (3, -1...1): color = Color(hue: 0.15, saturation: 0, brightness: 1, opacity: 0.25)
-            default: color = .blue
-            }
-
             // Use separate variable because the cell's reference is weak.
             // Don't want the Gremlin going out of scope
-            let g = Gremlin(color)
+            let g = Gremlin()
             cell.gremlin = g
             return g
         }
@@ -78,8 +68,12 @@ struct ContentView: View {
     }
 
     func pixelPosition(for gridPosition: GridPoint) -> CGPoint {
-        gridPosition.asPoint() + (gridDimensionsPixels.asPoint() / 2) +
-        gridPosition.asPoint() * cellDimensionsPixels.asPoint()
+        let x = gridPosition.x + grid.width / 2
+        let y = -(gridPosition.y - grid.height / 2)
+
+        return CGPoint(x: x, y: y).asPoint() *
+                cellDimensionsPixels.asPoint() +
+                cellDimensionsPixels.asPoint() / 2
     }
 
     var visibleGrid: some View {
@@ -102,18 +96,16 @@ struct ContentView: View {
             let ap = grid.cellAt(ix, from: centerCell)!
             let pp = pixelPosition(for: ap.gridPosition)
 
-            Text("\(ap.gridPosition.debugDescription)").position(pp)
+            Text("\(ix)").position(pp)
         }
+        .frame(width: gridDimensionsPixels.width, height: gridDimensionsPixels.height)
+        .padding(7)
     }
 
     var body: some View {
-        HStack {
+        ZStack {
             visibleGrid
-            VStack {
-                ForEach(0..<5) { _ in
-                    Rectangle().foregroundColor(.blue)
-                }
-            }.frame(width: cellDimensionsPixels.width, height: cellDimensionsPixels.height)
+            labels
         }
     }
 }

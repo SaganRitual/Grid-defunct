@@ -21,6 +21,19 @@ struct TestGridCellFactory: GridCellFactoryProtocol {
     }
 }
 
+class TestGridSyncCell: GridSyncCellProtocol {
+    let gridPosition: GridPoint
+    var isLocked: Bool = false
+
+    init(gridPosition: GridPoint) { self.gridPosition = gridPosition }
+}
+
+struct TestGridSyncCellFactory: GridCellFactoryProtocol {
+    func makeCell(gridPosition: GridPoint) -> GridCellProtocol {
+        TestGridSyncCell(gridPosition: gridPosition)
+    }
+}
+
 class GridTests: XCTestCase {
     let side: Int = 99
     var grid: Grid!
@@ -43,7 +56,7 @@ class GridTests: XCTestCase {
 
     func testForSmoke() throws {
         let dimensions = GridSize(width: side, height: side)
-        let grid = Grid(size: dimensions, cellFactory: TestGridCellFactory())
+        let grid = Grid(size: dimensions, cellLayoutType: .fullGrid, cellFactory: TestGridCellFactory())
 
         // Because grid likes odd
         let side = (self.side % 2 == 1) ? self.side : self.side - 1
@@ -56,7 +69,7 @@ class GridTests: XCTestCase {
 
     func testIndexer() throws {
         let dimensions = GridSize(width: side, height: side)
-        self.grid = Grid(size: dimensions, cellFactory: TestGridCellFactory())
+        self.grid = Grid(size: dimensions, cellLayoutType: .fullGrid, cellFactory: TestGridCellFactory())
 
         let f1Position = GridPoint(x: Int.random(in: -half...half), y: Int.random(in: -half...half))
 
@@ -85,7 +98,7 @@ class GridTests: XCTestCase {
 
     func testAsteroidsUpperLeft() throws {
         let dimensions = GridSize(width: side, height: side)
-        let grid = Grid(size: dimensions, cellFactory: TestGridCellFactory())
+        let grid = Grid(size: dimensions, cellLayoutType: .fullGrid, cellFactory: TestGridCellFactory())
 
         let c1 = grid.cellAt(GridPoint(x: -half, y: half))
 
@@ -126,7 +139,7 @@ class GridTests: XCTestCase {
 
     func testAsteroidsLowerRight() throws {
         let dimensions = GridSize(width: side, height: side)
-        let grid = Grid(size: dimensions, cellFactory: TestGridCellFactory())
+        let grid = Grid(size: dimensions, cellLayoutType: .fullGrid, cellFactory: TestGridCellFactory())
 
         let c1 = grid.cellAt(GridPoint(x: half, y: -half))
 
@@ -163,6 +176,68 @@ class GridTests: XCTestCase {
             realPositionsOk,
             "adjacentCells in ring around lower-right corner show incorrect real position"
         )
+    }
+
+    func testGridSyncLock() throws {
+        let dimensions = GridSize(width: 13, height: 13)
+        let grid = Grid(size: dimensions, cellLayoutType: .fullGrid, cellFactory: TestGridSyncCellFactory())
+        let sync = GridSync(grid)
+
+        let p0 = sync.cellAt(GridPoint(x: -1, y: +1))
+        let p1 = sync.cellAt(GridPoint(x: +1, y: -1))
+        let p2 = sync.cellAt(GridPoint(x: +1, y: -2))
+
+        let exp = XCTestExpectation()
+
+        let expectedLockmap = [
+            false, true, true, false, true,
+            true, true, true, true, true,
+            true, true, true, true, true,
+            true, true, true, true, false,
+            true, true, true, true, true
+        ]
+
+        sync.lockCell(cell: p0) {
+            sync.lockCell(cell: p2) {
+                sync.lockCell(cell: p1) {
+                    sync.lockArea(center: p1, cRings: 2) { lockmap in
+                        XCTAssert(lockmap == expectedLockmap)
+                        exp.fulfill()
+                    }
+                }
+            }
+        }
+
+        wait(for: [exp], timeout: 1)
+    }
+
+    struct GridPointWithMessage {
+        let cell: GridSyncCellProtocol
+        let message: String
+
+        init(_ cell: GridSyncCellProtocol, _ message: String) {
+            self.cell = cell; self.message = message
+        }
+    }
+
+    func testGridSyncDeferral() throws {
+        let dimensions = GridSize(width: 13, height: 13)
+        let grid = Grid(size: dimensions, cellLayoutType: .fullGrid, cellFactory: TestGridSyncCellFactory())
+        let sync = GridSync(grid)
+
+        let p0 = sync.cellAt(GridPoint(x: -1, y: +1))
+
+        let exp1 = XCTestExpectation(description: "#1 gets deferred")
+        let exp2 = XCTestExpectation(description: "#2 gets deferred")
+
+        sync.lockCell(cell: p0) {
+            sync.lockCell(cell: p0) { exp1.fulfill(); sync.releaseLock(cell: p0) }
+            sync.lockCell(cell: p0) { exp2.fulfill(); sync.releaseLock(cell: p0) }
+
+            sync.releaseLock(cell: p0)
+        }
+
+        wait(for: [exp1, exp2], timeout: 1)
     }
 
     func testPerformanceExample() throws {

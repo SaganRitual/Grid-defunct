@@ -45,6 +45,8 @@ extension GridIndexer {
         return asteroidize(virtualGridPosition)
     }
 
+    func square(_ value: Int) -> Int { value * value }
+
     func offsetToLocalIndex(_ offset: GridPoint) -> Int {
         let whichRing = max(abs(offset.x), abs(offset.y))
 

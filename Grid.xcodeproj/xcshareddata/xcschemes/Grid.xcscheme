@@ -39,16 +39,6 @@
                ReferencedContainer = "container:Grid.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D443DB24250AB70C00585F7C"
-               BuildableName = "GridUITests.xctest"
-               BlueprintName = "GridUITests"
-               ReferencedContainer = "container:Grid.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

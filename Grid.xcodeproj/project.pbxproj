@@ -13,15 +13,10 @@
 		D443DB10250AB70C00585F7C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D443DB0F250AB70C00585F7C /* Preview Assets.xcassets */; };
 		D443DB13250AB70C00585F7C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D443DB11250AB70C00585F7C /* Main.storyboard */; };
 		D443DB1F250AB70C00585F7C /* GridTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB1E250AB70C00585F7C /* GridTests.swift */; };
-		D443DB2A250AB70C00585F7C /* GridUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB29250AB70C00585F7C /* GridUITests.swift */; };
 		D443DB39250AB7C900585F7C /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB38250AB7C900585F7C /* Grid.swift */; };
 		D443DB3A250AB85800585F7C /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB38250AB7C900585F7C /* Grid.swift */; };
 		D443DB3E250AB9FA00585F7C /* GridIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB3C250AB9FA00585F7C /* GridIndexer.swift */; };
 		D443DB3F250ABA0800585F7C /* GridIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB3C250AB9FA00585F7C /* GridIndexer.swift */; };
-		D443DB50250ACF8F00585F7C /* Overload2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB4D250ACF8F00585F7C /* Overload2D.swift */; };
-		D443DB51250ACF8F00585F7C /* Overload2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB4D250ACF8F00585F7C /* Overload2D.swift */; };
-		D443DB53250ACFB900585F7C /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB52250ACFB900585F7C /* Utilities.swift */; };
-		D443DB54250ACFB900585F7C /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB52250ACFB900585F7C /* Utilities.swift */; };
 		D443DB59250D4A5C00585F7C /* GridNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB58250D480C00585F7C /* GridNavigator.swift */; };
 		D443DB5A250D4A5D00585F7C /* GridNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D443DB58250D480C00585F7C /* GridNavigator.swift */; };
 		D443DB60250D69BD00585F7C /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = D443DB5D250D69BD00585F7C /* .swiftlint.yml */; };
@@ -30,6 +25,14 @@
 		D443DB63250D69BD00585F7C /* swiftlint.sh in Resources */ = {isa = PBXBuildFile; fileRef = D443DB5E250D69BD00585F7C /* swiftlint.sh */; };
 		D443DB64250D69BD00585F7C /* .overcommit.yml in Resources */ = {isa = PBXBuildFile; fileRef = D443DB5F250D69BD00585F7C /* .overcommit.yml */; };
 		D443DB65250D69BD00585F7C /* .overcommit.yml in Resources */ = {isa = PBXBuildFile; fileRef = D443DB5F250D69BD00585F7C /* .overcommit.yml */; };
+		D4A0B3C525B3E47400A67292 /* GridCellLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A0B3C425B3E47400A67292 /* GridCellLayout.swift */; };
+		D4A0B3C625B3E47400A67292 /* GridCellLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A0B3C425B3E47400A67292 /* GridCellLayout.swift */; };
+		D4A0B3D425B3E4A100A67292 /* Overload2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A0B3D325B3E4A100A67292 /* Overload2D.swift */; };
+		D4A0B3D525B3E4A100A67292 /* Overload2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A0B3D325B3E4A100A67292 /* Overload2D.swift */; };
+		D4A0B3E925B400C200A67292 /* GridSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A0B3E825B400C200A67292 /* GridSync.swift */; };
+		D4A0B3EA25B400C200A67292 /* GridSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A0B3E825B400C200A67292 /* GridSync.swift */; };
+		D4A0B3F025B407B700A67292 /* Deque.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A0B3EF25B407B700A67292 /* Deque.swift */; };
+		D4A0B3F125B407B700A67292 /* Deque.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A0B3EF25B407B700A67292 /* Deque.swift */; };
 		D4BAA1122582FDE100C6C8E6 /* GridPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BAA1112582FDE100C6C8E6 /* GridPoint.swift */; };
 		D4BAA1132582FDE100C6C8E6 /* GridPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BAA1112582FDE100C6C8E6 /* GridPoint.swift */; };
 /* End PBXBuildFile section */
@@ -64,16 +67,16 @@
 		D443DB1E250AB70C00585F7C /* GridTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridTests.swift; sourceTree = "<group>"; };
 		D443DB20250AB70C00585F7C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D443DB25250AB70C00585F7C /* GridUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GridUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D443DB29250AB70C00585F7C /* GridUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUITests.swift; sourceTree = "<group>"; };
-		D443DB2B250AB70C00585F7C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D443DB38250AB7C900585F7C /* Grid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
 		D443DB3C250AB9FA00585F7C /* GridIndexer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridIndexer.swift; sourceTree = "<group>"; };
-		D443DB4D250ACF8F00585F7C /* Overload2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Overload2D.swift; sourceTree = "<group>"; };
-		D443DB52250ACFB900585F7C /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		D443DB58250D480C00585F7C /* GridNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridNavigator.swift; sourceTree = "<group>"; };
 		D443DB5D250D69BD00585F7C /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		D443DB5E250D69BD00585F7C /* swiftlint.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = swiftlint.sh; sourceTree = "<group>"; };
 		D443DB5F250D69BD00585F7C /* .overcommit.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .overcommit.yml; sourceTree = "<group>"; };
+		D4A0B3C425B3E47400A67292 /* GridCellLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridCellLayout.swift; sourceTree = "<group>"; };
+		D4A0B3D325B3E4A100A67292 /* Overload2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Overload2D.swift; sourceTree = "<group>"; };
+		D4A0B3E825B400C200A67292 /* GridSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridSync.swift; sourceTree = "<group>"; };
+		D4A0B3EF25B407B700A67292 /* Deque.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deque.swift; sourceTree = "<group>"; };
 		D4BAA1112582FDE100C6C8E6 /* GridPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridPoint.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -111,7 +114,6 @@
 				D443DB37250AB7B400585F7C /* Source */,
 				D443DB07250AB70B00585F7C /* Grid */,
 				D443DB1D250AB70C00585F7C /* GridTests */,
-				D443DB28250AB70C00585F7C /* GridUITests */,
 				D443DB06250AB70B00585F7C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -157,35 +159,27 @@
 			path = GridTests;
 			sourceTree = "<group>";
 		};
-		D443DB28250AB70C00585F7C /* GridUITests */ = {
-			isa = PBXGroup;
-			children = (
-				D443DB29250AB70C00585F7C /* GridUITests.swift */,
-				D443DB2B250AB70C00585F7C /* Info.plist */,
-			);
-			path = GridUITests;
-			sourceTree = "<group>";
-		};
 		D443DB37250AB7B400585F7C /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				D443DB45250ABAE200585F7C /* Tools */,
+				D4A0B3EE25B4078F00A67292 /* Tools */,
 				D443DB38250AB7C900585F7C /* Grid.swift */,
+				D4A0B3C425B3E47400A67292 /* GridCellLayout.swift */,
 				D443DB3C250AB9FA00585F7C /* GridIndexer.swift */,
 				D443DB58250D480C00585F7C /* GridNavigator.swift */,
 				D4BAA1112582FDE100C6C8E6 /* GridPoint.swift */,
+				D4A0B3E825B400C200A67292 /* GridSync.swift */,
+				D4A0B3D325B3E4A100A67292 /* Overload2D.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
 		};
-		D443DB45250ABAE200585F7C /* Tools */ = {
+		D4A0B3EE25B4078F00A67292 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
-				D443DB4D250ACF8F00585F7C /* Overload2D.swift */,
-				D443DB52250ACFB900585F7C /* Utilities.swift */,
+				D4A0B3EF25B407B700A67292 /* Deque.swift */,
 			);
 			name = Tools;
-			path = ../../Tools;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -345,13 +339,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D443DB53250ACFB900585F7C /* Utilities.swift in Sources */,
 				D443DB0B250AB70B00585F7C /* ContentView.swift in Sources */,
+				D4A0B3C525B3E47400A67292 /* GridCellLayout.swift in Sources */,
 				D4BAA1122582FDE100C6C8E6 /* GridPoint.swift in Sources */,
 				D443DB3E250AB9FA00585F7C /* GridIndexer.swift in Sources */,
 				D443DB09250AB70B00585F7C /* AppDelegate.swift in Sources */,
-				D443DB50250ACF8F00585F7C /* Overload2D.swift in Sources */,
+				D4A0B3D425B3E4A100A67292 /* Overload2D.swift in Sources */,
+				D4A0B3E925B400C200A67292 /* GridSync.swift in Sources */,
 				D443DB59250D4A5C00585F7C /* GridNavigator.swift in Sources */,
+				D4A0B3F025B407B700A67292 /* Deque.swift in Sources */,
 				D443DB39250AB7C900585F7C /* Grid.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -362,11 +358,13 @@
 			files = (
 				D4BAA1132582FDE100C6C8E6 /* GridPoint.swift in Sources */,
 				D443DB3F250ABA0800585F7C /* GridIndexer.swift in Sources */,
+				D4A0B3F125B407B700A67292 /* Deque.swift in Sources */,
 				D443DB1F250AB70C00585F7C /* GridTests.swift in Sources */,
+				D4A0B3C625B3E47400A67292 /* GridCellLayout.swift in Sources */,
+				D4A0B3EA25B400C200A67292 /* GridSync.swift in Sources */,
+				D4A0B3D525B3E4A100A67292 /* Overload2D.swift in Sources */,
 				D443DB5A250D4A5D00585F7C /* GridNavigator.swift in Sources */,
-				D443DB54250ACFB900585F7C /* Utilities.swift in Sources */,
 				D443DB3A250AB85800585F7C /* Grid.swift in Sources */,
-				D443DB51250ACF8F00585F7C /* Overload2D.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -374,7 +372,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D443DB2A250AB70C00585F7C /* GridUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
