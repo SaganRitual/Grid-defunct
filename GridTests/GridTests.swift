@@ -211,15 +211,6 @@ class GridTests: XCTestCase {
         wait(for: [exp], timeout: 1)
     }
 
-    struct GridPointWithMessage {
-        let cell: GridSyncCellProtocol
-        let message: String
-
-        init(_ cell: GridSyncCellProtocol, _ message: String) {
-            self.cell = cell; self.message = message
-        }
-    }
-
     func testGridSyncDeferral() throws {
         let dimensions = GridSize(width: 13, height: 13)
         let grid = Grid(size: dimensions, cellLayoutType: .fullGrid, cellFactory: TestGridSyncCellFactory())
@@ -227,8 +218,8 @@ class GridTests: XCTestCase {
 
         let p0 = sync.cellAt(GridPoint(x: -1, y: +1))
 
-        let exp1 = XCTestExpectation(description: "#1 gets deferred")
-        let exp2 = XCTestExpectation(description: "#2 gets deferred")
+        let exp1 = XCTestExpectation(description: "#1 gets deferred; runs again when first lock is released")
+        let exp2 = XCTestExpectation(description: "#2 gets deferred; runs again when #1 lock is released")
 
         sync.lockCell(cell: p0) {
             sync.lockCell(cell: p0) { exp1.fulfill(); sync.releaseLock(cell: p0) }
