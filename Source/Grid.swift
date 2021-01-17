@@ -69,6 +69,19 @@ struct Grid {
 }
 
 extension Grid {
+    /// Gets the cell at an absolute index within the grid cell array.
+    /// This is for easy iteration over all the cells in the grid as a
+    /// 1D vector
+    ///
+    /// - Parameter absoluteIndex: a subscript into the array of cells
+    /// in the grid
+    ///
+    /// - Returns: The (x, y) coordinates of the cell in its place
+    /// on the grid plane
+    func gridPosition(of absoluteIndex: Int) -> GridPoint {
+        navigator.layout.gridPosition(of: absoluteIndex)
+    }
+
     /// Gets the cell at the indicated coordinates on the grid
     ///
     /// - Parameter position: The cell's position on the grid. The point (0, 0)
