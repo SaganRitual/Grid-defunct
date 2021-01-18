@@ -190,7 +190,7 @@ class GridTests: XCTestCase {
         let exp = XCTestExpectation()
 
         let expectedLockmap = [
-            false, true, true, false, true,
+            true, true, false, true,
             true, true, true, true, true,
             true, true, true, true, true,
             true, true, true, true, false,
@@ -201,6 +201,7 @@ class GridTests: XCTestCase {
             sync.lockCell(cell: p2) {
                 sync.lockCell(cell: p1) {
                     sync.lockArea(center: p1, cRings: 2) { lockmap in
+                        print(lockmap)
                         XCTAssert(lockmap == expectedLockmap)
                         exp.fulfill()
                     }

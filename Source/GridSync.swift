@@ -32,13 +32,14 @@ class GridSync {
         _ onComplete: @escaping ([Bool]) -> Void
     ) {
         lockQueue.async {
-            let lockMap: [Bool] = (0..<Grid.cRingsToCells(cRings: 2)).map {
-                let cell = self.cellAt($0, from: center)
-                defer { cell.isLocked = true }
-                return !cell.isLocked
-            }
+            let lockmap: [Bool] =
+                (0..<Grid.cRingsToCells(cRings: cRings)).map {
+                    let cell = self.cellAt($0 + 1, from: center)
+                    defer { cell.isLocked = true }
+                    return !cell.isLocked
+                }
 
-            DispatchQueue.main.async { onComplete(lockMap) }
+            DispatchQueue.main.async { onComplete(lockmap) }
         }
     }
 
@@ -65,12 +66,23 @@ class GridSync {
         }
     }
 
-    func releaseLocks(from center: GridSyncCellProtocol, lockMap: [Bool]) {
+    func releaseLocks(from center: GridSyncCellProtocol, lockmap: [Bool]) {
         lockQueue.async {
-            lockMap.filter({ $0 }).indices.forEach { [self] in
-                let cell = cellAt($0, from: center)
-                releaseLock_(cell: cell)
+            lockmap.indices.forEach { lockIndex in
+                if !lockmap[lockIndex] { return }
+                let cell = self.cellAt(lockIndex + 1, from: center)
+                self.releaseLock_(cell: cell)
             }
+        }
+    }
+
+    func withGridLocked(
+        execute work: @escaping () -> Void,
+        _ onComplete: @escaping () -> Void
+    ) {
+        lockQueue.async {
+            work()
+            DispatchQueue.main.async(execute: onComplete)
         }
     }
 }

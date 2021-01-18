@@ -53,7 +53,7 @@ struct GridNavigator {
 
     static func cRingsToCells(cRings: Int) -> Int {
         let cellsPerSide = (2 * cRings) + 1
-        return cellsPerSide * cellsPerSide
+        return cellsPerSide * cellsPerSide - 1
     }
 }
 
