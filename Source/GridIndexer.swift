@@ -100,6 +100,13 @@ private extension GridIndexer {
     // the grid, and if so, return the point on the other side of the grid,
     // a wrap-around like the old Atari game called Asteroids
     func asteroidize(_ virtualGridPosition: GridPoint) -> Grid.AsteroidPoint {
+        if locator.isOnGrid(virtualGridPosition) {
+            return Grid.AsteroidPoint(
+                realCell: locator.cell(at: virtualGridPosition),
+                relativeVirtualPosition: virtualGridPosition
+            )
+        }
+
         let ax = abs(virtualGridPosition.x), sx = (virtualGridPosition.x < 0) ? -1 : 1
         let ay = abs(virtualGridPosition.y), sy = (virtualGridPosition.y < 0) ? -1 : 1
 
@@ -115,16 +122,10 @@ private extension GridIndexer {
         let realGridPosition = GridPoint(x: newX, y: newY)
         let realCell = locator.cell(at: realGridPosition)
 
-        return realGridPosition == virtualGridPosition ?
-            Grid.AsteroidPoint(
-                realCell: realCell,
-                relativeVirtualPosition: realGridPosition
-            ) :
-
-            Grid.AsteroidPoint(
-                realCell: realCell,
-                relativeVirtualPosition: virtualGridPosition
-            )
+        return Grid.AsteroidPoint(
+            realCell: realCell,
+            relativeVirtualPosition: virtualGridPosition
+        )
     }
 }
 

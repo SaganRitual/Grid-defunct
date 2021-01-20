@@ -24,7 +24,8 @@ class GridSync {
     func cellAt(
         _ ix: Int, from center: GridSyncCellProtocol
     ) -> GridSyncCellProtocol {
-        (grid.cellAt(ix, from: center) as? GridSyncCellProtocol)!
+        let ap = grid.asteroidPoint(ix, from: center)
+        return (ap.realCell as? GridSyncCellProtocol)!
     }
 
     func lockArea(
@@ -32,8 +33,9 @@ class GridSync {
         _ onComplete: @escaping ([Bool]) -> Void
     ) {
         lockQueue.async {
+            let cCells = Grid.cRingsToCells(cRings: cRings)
             let lockmap: [Bool] =
-                (0..<Grid.cRingsToCells(cRings: cRings)).map {
+                (0..<cCells).map {
                     let cell = self.cellAt($0 + 1, from: center)
                     defer { cell.isLocked = true }
                     return !cell.isLocked
