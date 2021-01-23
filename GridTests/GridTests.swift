@@ -39,6 +39,12 @@ class GridTests: XCTestCase {
     var grid: Grid!
     var half: Int { side / 2 }
 
+    let callbackQueue = DispatchQueue(
+        label: "test.callback",
+        attributes: .concurrent,
+        target: DispatchQueue.global()
+    )
+
     func cell(_ gridCell: GridCellProtocol) -> TestGridCell {
         (gridCell as? TestGridCell)!
     }

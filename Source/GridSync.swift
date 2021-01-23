@@ -9,13 +9,20 @@ protocol GridSyncCellProtocol: GridCellProtocol {
 class GridSync {
     let grid: Grid
 
+    var deferrals = [GridPoint: Deque<() -> Void>]()
+
+    let callbackQueue: DispatchQueue
+
     let lockQueue = DispatchQueue(
         label: "gridsync", target: DispatchQueue.global()
     )
 
-    var deferrals = [GridPoint: Deque<() -> Void>]()
-
-    init(_ grid: Grid) { self.grid = grid }
+    init(
+        _ grid: Grid, callbackQueue: DispatchQueue = DispatchQueue.main
+     ) {
+        self.grid = grid
+        self.callbackQueue = callbackQueue
+    }
 
     func cellAt(_ gridPosition: GridPoint) -> GridSyncCellProtocol {
         (grid.cellAt(gridPosition) as? GridSyncCellProtocol)!
@@ -41,18 +48,18 @@ class GridSync {
                     return !cell.isLocked
                 }
 
-            DispatchQueue.main.async { onComplete(lockmap) }
+            self.callbackQueue.async { onComplete(lockmap) }
         }
     }
 
     func lockCell(
         cell: GridSyncCellProtocol, _ onComplete: @escaping () -> Void
     ) {
-        lockQueue.async {
-            if cell.isLocked { self.deferCompletion(cell, onComplete); return }
+        lockQueue.async { [self] in
+            if cell.isLocked { deferCompletion(cell, onComplete); return }
 
             cell.isLocked = true
-            DispatchQueue.main.async(execute: onComplete)
+            callbackQueue.async(execute: onComplete)
         }
     }
 
@@ -62,7 +69,7 @@ class GridSync {
 
     private func releaseLock_(cell: GridSyncCellProtocol) {
         if let row = self.deferrals[cell.gridPosition], !row.isEmpty {
-            DispatchQueue.main.async(execute: row.popFront())
+            callbackQueue.async(execute: row.popFront())
         } else {
             cell.isLocked = false
         }
@@ -84,7 +91,7 @@ class GridSync {
     ) {
         lockQueue.async {
             work()
-            DispatchQueue.main.async(execute: onComplete)
+            self.callbackQueue.async(execute: onComplete)
         }
     }
 }
