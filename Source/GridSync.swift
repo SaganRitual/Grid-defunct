@@ -12,16 +12,19 @@ class GridSync {
     var deferrals = [GridPoint: Deque<() -> Void>]()
 
     let callbackQueue: DispatchQueue
+    let maxDeferralDepth: Int
 
     let lockQueue = DispatchQueue(
         label: "gridsync", target: DispatchQueue.global()
     )
 
     init(
-        _ grid: Grid, callbackQueue: DispatchQueue = DispatchQueue.main
+        _ grid: Grid, callbackQueue: DispatchQueue = DispatchQueue.main,
+        maxDeferralDepth: Int = 100
      ) {
         self.grid = grid
         self.callbackQueue = callbackQueue
+        self.maxDeferralDepth = maxDeferralDepth
     }
 
     func cellAt(_ gridPosition: GridPoint) -> GridSyncCellProtocol {
@@ -42,8 +45,8 @@ class GridSync {
         lockQueue.async {
             let cCells = Grid.cRingsToCells(cRings: cRings)
             let lockmap: [Bool] =
-                (0..<cCells).map {
-                    let cell = self.cellAt($0 + 1, from: center)
+                (1..<cCells).map {
+                    let cell = self.cellAt($0, from: center)
                     defer { cell.isLocked = true }
                     return !cell.isLocked
                 }
@@ -56,7 +59,10 @@ class GridSync {
         cell: GridSyncCellProtocol, _ onComplete: @escaping () -> Void
     ) {
         lockQueue.async { [self] in
-            if cell.isLocked { deferCompletion(cell, onComplete); return }
+            if cell.isLocked {
+                deferCompletion(cell, onComplete)
+                return
+            }
 
             cell.isLocked = true
             callbackQueue.async(execute: onComplete)
@@ -77,8 +83,7 @@ class GridSync {
 
     func releaseLocks(from center: GridSyncCellProtocol, lockmap: [Bool]) {
         lockQueue.async {
-            lockmap.indices.forEach { lockIndex in
-                if !lockmap[lockIndex] { return }
+            for lockIndex in lockmap.indices where lockmap[lockIndex] == true {
                 let cell = self.cellAt(lockIndex + 1, from: center)
                 self.releaseLock_(cell: cell)
             }
@@ -101,7 +106,7 @@ private extension GridSync {
         _ cell: GridSyncCellProtocol, _ completion: @escaping () -> Void
     ) {
         if deferrals[cell.gridPosition] == nil {
-            deferrals[cell.gridPosition] = Deque(cElements: 100)
+            deferrals[cell.gridPosition] = Deque(cElements: maxDeferralDepth)
         }
 
         deferrals[cell.gridPosition]!.pushBack(completion)

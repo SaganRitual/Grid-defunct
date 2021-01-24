@@ -1,5 +1,5 @@
 // We are a way for the cosmos to know itself. -- C. Sagan
-
+// swiftlint:disable function_body_length
 import XCTest
 @testable import Grid
 
@@ -185,37 +185,65 @@ class GridTests: XCTestCase {
     }
 
     func testGridSyncLock() throws {
+
+        let concurrentQueue = DispatchQueue(
+            label: "test.dq",
+            attributes: .concurrent,
+            target: DispatchQueue.global()
+        )
+
         let dimensions = GridSize(width: 13, height: 13)
         let grid = Grid(size: dimensions, cellLayoutType: .fullGrid, cellFactory: TestGridSyncCellFactory())
         let sync = GridSync(grid)
 
-        let p0 = sync.cellAt(GridPoint(x: -1, y: +1))
-        let p1 = sync.cellAt(GridPoint(x: +1, y: -1))
-        let p2 = sync.cellAt(GridPoint(x: +1, y: -2))
-
-        let exp = XCTestExpectation()
-
-        let expectedLockmap = [
-            true, true, false, true,
-            true, true, true, true, true,
-            true, true, true, true, true,
-            true, true, true, true, false,
-            true, true, true, true, true
+        let pointsToLock: [GridPoint] = [
+            GridPoint(x:  1, y:  0), GridPoint(x: -1, y: -1), GridPoint(x:  2, y: -1),
+            GridPoint(x:  0, y: -2), GridPoint(x: -2, y:  0), GridPoint(x: -2, y:  1),
+            GridPoint(x: -2, y:  2), GridPoint(x:  0, y:  2), GridPoint(x:  2, y:  2),
+            GridPoint(x:  2, y:  1)
         ]
 
-        sync.lockCell(cell: p0) {
-            sync.lockCell(cell: p2) {
-                sync.lockCell(cell: p1) {
-                    sync.lockArea(center: p1, cRings: 2) { lockmap in
-                        print(lockmap)
-                        XCTAssert(lockmap == expectedLockmap)
-                        exp.fulfill()
-                    }
+        let firstLockupCompletion = XCTestExpectation()
+        firstLockupCompletion.expectedFulfillmentCount = pointsToLock.count + 1
+
+        let expectedLockmap = [
+            false, true, true, false, true, true, true, true,
+            true, false, true, true, false, true, true, true,
+            false, false, false, true, false, true, false, false
+        ]
+
+        pointsToLock.forEach {
+            let cell = sync.cellAt($0)
+            let delay = Double.random(in: 0..<0.01)
+
+            sync.lockCell(cell: cell) {
+                concurrentQueue.asyncAfter(deadline: .now() + delay) {
+                    sync.releaseLock(cell: cell)
+                    firstLockupCompletion.fulfill()
                 }
             }
         }
 
-        wait(for: [exp], timeout: 1)
+        var lockmap = [Bool]()
+
+        sync.lockArea(center: sync.cellAt(.zero), cRings: 2) {
+            lockmap = $0
+            XCTAssert(lockmap == expectedLockmap, "actual lockmap \(lockmap)")
+            firstLockupCompletion.fulfill()
+        }
+
+        wait(for: [firstLockupCompletion], timeout: 2)
+
+        let secondLockupCompletion = XCTestExpectation()
+
+        sync.releaseLocks(from: sync.cellAt(.zero), lockmap: lockmap)
+
+        sync.lockArea(center: sync.cellAt(.zero), cRings: 2) { lockmap in
+            XCTAssert(lockmap.allSatisfy { $0 == true }, "lockmap should be all true: \(lockmap)")
+            secondLockupCompletion.fulfill()
+        }
+
+        wait(for: [secondLockupCompletion], timeout: 1)
     }
 
     func testGridSyncDeferral() throws {
@@ -236,6 +264,83 @@ class GridTests: XCTestCase {
         }
 
         wait(for: [exp1, exp2], timeout: 1)
+    }
+
+    func testGridSyncLoad() throws {
+        let dimensions = GridSize(width: 49, height: 49)
+        let grid = Grid(size: dimensions, cellLayoutType: .fullGrid, cellFactory: TestGridSyncCellFactory())
+
+        let concurrentQueue = DispatchQueue(
+            label: "test.dq",
+            attributes: .concurrent,
+            target: DispatchQueue.global()
+        )
+
+        let sync = GridSync(
+            grid, callbackQueue: concurrentQueue, maxDeferralDepth: 75
+        )
+
+        let cLoops = 100_000
+
+        let expectation = XCTestExpectation(description: "Await completion")
+        expectation.expectedFulfillmentCount = cLoops
+
+        func lockCell(cell toLock: GridSyncCellProtocol) {
+            let delay = Double.random(in: 0..<0.01)
+
+            sync.lockCell(cell: toLock) {
+                concurrentQueue.asyncAfter(deadline: .now() + delay) {
+                    sync.releaseLock(cell: toLock)
+                    expectation.fulfill()
+                }
+            }
+        }
+
+        let forcedDeferrals = XCTestExpectation(description: "Forced deferrals")
+        var iCallBullshit = 0
+
+        func lockArea(center: GridSyncCellProtocol) {
+            let delay = Double.random(in: 0..<0.01)
+
+            sync.lockArea(center: center, cRings: 3) { lockmap in
+                if let checkDeferIx = lockmap.indices.filter({ lockmap[$0] == false }).randomElement() {
+                    iCallBullshit += 1
+
+                    let checkDefer = sync.cellAt(checkDeferIx + 1, from: center)
+                    sync.lockCell(cell: checkDefer) {
+                        concurrentQueue.asyncAfter(deadline: .now() + delay) {
+                            sync.releaseLock(cell: checkDefer)
+                            forcedDeferrals.fulfill()
+                        }
+                    }
+                }
+
+                concurrentQueue.asyncAfter(deadline: .now() + delay) {
+                    sync.releaseLocks(from: center, lockmap: lockmap)
+                    expectation.fulfill()
+                }
+            }
+        }
+
+        for _ in 0..<cLoops {
+            let randomCell = (grid.randomCell() as? GridSyncCellProtocol)!
+
+            if Bool.random() { lockCell(cell: randomCell) }
+            else             { lockArea(center: randomCell) }
+        }
+
+        wait(for: [expectation], timeout: 10)
+
+        // Because the api won't let me start at zero
+        forcedDeferrals.expectedFulfillmentCount = iCallBullshit
+
+        if forcedDeferrals.expectedFulfillmentCount > 1 {
+            forcedDeferrals.expectedFulfillmentCount -= 1
+        }
+
+        print("forced \(forcedDeferrals.expectedFulfillmentCount), bullshit \(iCallBullshit)")
+
+        wait(for: [forcedDeferrals], timeout: 1)
     }
 
     func testPerformanceExample() throws {
