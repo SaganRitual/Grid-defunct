@@ -51,6 +51,15 @@ struct Grid {
         GridNavigator.cRingsToCells(cRings: cRings)
     }
 
+    /// Get the number of cells per side of the square for the rings
+    ///
+    /// - Parameter cRings: The number of rings to calculate
+    ///
+    /// - Returns: The number of cells per side for that many rings
+    static func cRingsToSide(cRings: Int) -> Int {
+        GridNavigator.cRingsToSide(cRings: cRings)
+    }
+
     /// Indicates whether the specified position is on the grid
     ///
     /// - Parameter position: The position to check

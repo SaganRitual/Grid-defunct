@@ -45,8 +45,10 @@ class GridSync {
         lockQueue.async {
             let cCells = Grid.cRingsToCells(cRings: cRings)
             let lockmap: [Bool] =
-                (1..<cCells).map {
+                (0..<cCells).map {
+                    if $0 == 0 { return false }
                     let cell = self.cellAt($0, from: center)
+
                     defer { cell.isLocked = true }
                     return !cell.isLocked
                 }
@@ -58,11 +60,8 @@ class GridSync {
     func lockCell(
         cell: GridSyncCellProtocol, _ onComplete: @escaping () -> Void
     ) {
-        lockQueue.async { [self] in
-            if cell.isLocked {
-                deferCompletion(cell, onComplete)
-                return
-            }
+        lockQueue.async { [unowned self] in
+            if cell.isLocked { deferCompletion(cell, onComplete); return }
 
             cell.isLocked = true
             callbackQueue.async(execute: onComplete)
@@ -81,13 +80,16 @@ class GridSync {
         }
     }
 
-    func releaseLocks(from center: GridSyncCellProtocol, lockmap: [Bool]) {
-        lockQueue.async {
-            for lockIndex in lockmap.indices where lockmap[lockIndex] == true {
-                let cell = self.cellAt(lockIndex + 1, from: center)
-                self.releaseLock_(cell: cell)
-            }
+    // Notice no callback; releasing locks need not wait for anything
+    func releaseLocks_(from center: GridSyncCellProtocol, lockmap: [Bool]) {
+        for lockIndex in lockmap.indices where lockmap[lockIndex] == true {
+            let cell = self.cellAt(lockIndex, from: center)
+            self.releaseLock_(cell: cell)
         }
+    }
+
+    func releaseLocks(from center: GridSyncCellProtocol, lockmap: [Bool]) {
+        lockQueue.async { self.releaseLocks_(from: center, lockmap: lockmap) }
     }
 
     func withGridLocked(

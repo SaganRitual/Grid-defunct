@@ -52,9 +52,11 @@ struct GridNavigator {
     func randomCell() -> GridCellProtocol { theCells.randomElement()! }
 
     static func cRingsToCells(cRings: Int) -> Int {
-        let cellsPerSide = (2 * cRings) + 1
+        let cellsPerSide = cRingsToSide(cRings: cRings)
         return cellsPerSide * cellsPerSide
     }
+
+    static func cRingsToSide(cRings: Int) -> Int { 2 * cRings + 1 }
 }
 
 extension GridNavigator {
