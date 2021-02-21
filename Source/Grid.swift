@@ -166,6 +166,14 @@ extension Grid {
         return indexer.localIndexToAsteroidGrid(localIx, from: centerCell)
     }
 
+    /// Gets the ring index corresponding to the offset
+    ///
+    /// - Parameters:
+    ///   - offset: The offset from the center, ie, GridPoint(x: 0, y 0)
+    func offsetToLocalIndex(_ offset: GridPoint) -> Int {
+        indexer.offsetToLocalIndex(offset)
+    }
+
     /// Get a random cell from the grid
     /// - Returns: A random cell
     func randomCell() -> GridCellProtocol { navigator.randomCell() }
