@@ -21,12 +21,12 @@ struct Grid {
         cellLayoutType: GridNavigator.LayoutType,
         cellFactory: GridCellFactoryProtocol
     ) {
-        if cellLayoutType == .fullGrid {
-            precondition(
-                size.width % 2 == 1 && size.height % 2 == 1,
-                "Width and height of the grid must both be odd"
-            )
-        }
+//        if cellLayoutType == .fullGrid {
+//            precondition(
+//                size.width % 2 == 1 && size.height % 2 == 1,
+//                "Width and height of the grid must both be odd"
+//            )
+//        }
 
         self.navigator = .init(
             size: size, layoutType: cellLayoutType, cellFactory: cellFactory
@@ -170,8 +170,8 @@ extension Grid {
     ///
     /// - Parameters:
     ///   - offset: The offset from the center, ie, GridPoint(x: 0, y 0)
-    func offsetToLocalIndex(_ offset: GridPoint) -> Int {
-        indexer.offsetToLocalIndex(offset)
+    static func offsetToLocalIndex(_ offset: GridPoint) -> Int {
+        GridIndexer.offsetToLocalIndex(offset)
     }
 
     /// Get a random cell from the grid

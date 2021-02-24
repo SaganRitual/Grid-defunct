@@ -63,13 +63,13 @@ struct GridCellLayoutFull: GridCellLayoutProtocol {
     }
 }
 
-struct GridCellLayoutFactoryQ1: GridCellLayoutFactoryProtocol {
+struct GridCellLayoutFactoryQ1YDown: GridCellLayoutFactoryProtocol {
     func makeLayout(size: GridSize) -> GridCellLayoutProtocol {
-        GridCellLayoutQ1(size: size)
+        GridCellLayoutQ1YDown(size: size)
     }
 }
 
-struct GridCellLayoutQ1: GridCellLayoutProtocol {
+struct GridCellLayoutQ1YDown: GridCellLayoutProtocol {
     let size: GridSize
 
     func cellIndex(at position: GridPoint) -> Int {
@@ -78,5 +78,23 @@ struct GridCellLayoutQ1: GridCellLayoutProtocol {
 
     func gridPosition(of index: Int) -> GridPoint {
         GridPoint(x: index % size.width, y: index / size.width)
+    }
+}
+
+struct GridCellLayoutFactoryQ1YUp: GridCellLayoutFactoryProtocol {
+    func makeLayout(size: GridSize) -> GridCellLayoutProtocol {
+        GridCellLayoutQ1YUp(size: size)
+    }
+}
+
+struct GridCellLayoutQ1YUp: GridCellLayoutProtocol {
+    let size: GridSize
+
+    func cellIndex(at position: GridPoint) -> Int {
+        (size.height - 1 - position.y) * size.width + position.x
+    }
+
+    func gridPosition(of index: Int) -> GridPoint {
+        GridPoint(x: index % size.width, y: size.height - 1 - (index / size.width))
     }
 }

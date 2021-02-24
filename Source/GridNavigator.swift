@@ -17,7 +17,7 @@ protocol GridCellFactoryProtocol {
 }
 
 struct GridNavigator {
-    enum LayoutType { case fullGrid, q1Only }
+    enum LayoutType { case fullGrid, q1YDown, q1YUp }
 
     let layout: GridCellLayoutProtocol
     let size: GridSize
@@ -34,7 +34,8 @@ struct GridNavigator {
 
         switch layoutType {
         case .fullGrid: layoutFactory = GridCellLayoutFactoryFull()
-        case .q1Only:   layoutFactory = GridCellLayoutFactoryQ1()
+        case .q1YDown:  layoutFactory = GridCellLayoutFactoryQ1YDown()
+        case .q1YUp:    layoutFactory = GridCellLayoutFactoryQ1YUp()
         }
 
         self.layout = layoutFactory.makeLayout(size: size)
