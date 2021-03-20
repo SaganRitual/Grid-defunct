@@ -2,7 +2,12 @@
 
 import Foundation
 
+protocol GridCellContentsProtocol: class {
+
+}
+
 protocol GridCellProtocol: class {
+    var gridCellContents: GridCellContentsProtocol? { get set }
     var gridPosition: GridPoint { get }
 }
 
@@ -12,8 +17,20 @@ extension GridCellProtocol {
     }
 }
 
+class DefaultGridCell: GridCellProtocol {
+    weak var gridCellContents: GridCellContentsProtocol?
+    let gridPosition: GridPoint
+    init(_ gridPosition: GridPoint) { self.gridPosition = gridPosition }
+}
+
 protocol GridCellFactoryProtocol {
     func makeCell(gridPosition: GridPoint) -> GridCellProtocol
+}
+
+class DefaultGridCellFactory: GridCellFactoryProtocol {
+    func makeCell(gridPosition: GridPoint) -> GridCellProtocol {
+        DefaultGridCell(gridPosition)
+    }
 }
 
 struct GridNavigator {
@@ -62,7 +79,16 @@ struct GridNavigator {
 
 extension GridNavigator {
     func isOnGrid(_ position: GridPoint) -> Bool {
-        let hw = size.width / 2, hh = size.height / 2
-        return (-hw...hw).contains(position.x) && (-hh...hh).contains(position.y)
+        switch self.layout.layout {
+        case .fullGrid:
+            let hw = size.width / 2, hh = size.height / 2
+            return (-hw...hw).contains(position.x) && (-hh...hh).contains(position.y)
+
+        case .q1YDown: fallthrough
+        case .q1YUp:
+            return
+                (0..<size.width).contains(position.x) &&
+                (0..<size.height).contains(position.y)
+        }
     }
 }

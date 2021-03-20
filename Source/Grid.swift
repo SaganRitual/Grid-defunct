@@ -19,7 +19,7 @@ struct Grid {
     init(
         size: GridSize,
         cellLayoutType: GridNavigator.LayoutType,
-        cellFactory: GridCellFactoryProtocol
+        cellFactory: GridCellFactoryProtocol?
     ) {
 //        if cellLayoutType == .fullGrid {
 //            precondition(
@@ -29,7 +29,8 @@ struct Grid {
 //        }
 
         self.navigator = .init(
-            size: size, layoutType: cellLayoutType, cellFactory: cellFactory
+            size: size, layoutType: cellLayoutType,
+            cellFactory: cellFactory ?? DefaultGridCellFactory()
         )
 
         self.indexer = .init(size: size, locator: self.navigator)

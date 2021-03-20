@@ -3,6 +3,7 @@
 import Foundation
 
 protocol GridCellLayoutProtocol {
+    var layout: GridNavigator.LayoutType { get }
     var size: GridSize { get }
 
     func cellIndex(at position: GridPoint) -> Int
@@ -40,6 +41,7 @@ struct GridCellLayoutFactoryFull: GridCellLayoutFactoryProtocol {
 }
 
 struct GridCellLayoutFull: GridCellLayoutProtocol {
+    let layout: GridNavigator.LayoutType = .fullGrid
     let size: GridSize
 
     func cellIndex(at position: GridPoint) -> Int {
@@ -70,6 +72,7 @@ struct GridCellLayoutFactoryQ1YDown: GridCellLayoutFactoryProtocol {
 }
 
 struct GridCellLayoutQ1YDown: GridCellLayoutProtocol {
+    let layout: GridNavigator.LayoutType = .q1YDown
     let size: GridSize
 
     func cellIndex(at position: GridPoint) -> Int {
@@ -88,6 +91,7 @@ struct GridCellLayoutFactoryQ1YUp: GridCellLayoutFactoryProtocol {
 }
 
 struct GridCellLayoutQ1YUp: GridCellLayoutProtocol {
+    let layout: GridNavigator.LayoutType = .q1YUp
     let size: GridSize
 
     func cellIndex(at position: GridPoint) -> Int {
